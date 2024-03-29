@@ -1,0 +1,24 @@
+plugins {
+    id 'java'
+    id 'io.spring.dependency-management' version '1.0.7.RELEASE'
+}
+
+group 'org.xxts'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation platform("io.projectreactor:reactor-bom:$reactorBomVersion")
+    implementation("io.projectreactor:reactor-core")
+    implementation("com.google.code.findbugs:jsr305:$jsr305Version")
+    implementation("org.slf4j:slf4j-api:$slf4jVersion")
+
+    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
