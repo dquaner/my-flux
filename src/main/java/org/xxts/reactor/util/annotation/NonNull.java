@@ -30,6 +30,7 @@ import java.lang.annotation.*;
  *
  * <p>
  * {@code @javax.annotation.Nonnull}:
+ * 在编译时检测空指针异常。
  * <ul>
  *     <li>被注释的元素必须非空</li>
  *     <li>被注释的属性在构造完成后必须非空</li>

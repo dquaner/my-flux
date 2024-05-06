@@ -124,7 +124,7 @@ public final class Disposables {
             }
             List<Disposable> set;
             synchronized (this) {
-                if (disposed) {
+                if (disposed) { // double check
                     return;
                 }
                 disposed = true;
@@ -145,7 +145,7 @@ public final class Disposables {
             Objects.requireNonNull(d, "d is null");
             if (!disposed) {
                 synchronized (this) {
-                    if (!disposed) {
+                    if (!disposed) {  // double check
                         List<Disposable> set = resources;
                         if (set == null) {
                             set = new LinkedList<>();

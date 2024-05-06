@@ -1,6 +1,9 @@
 package org.xxts.reactor.core;
 
+import org.xxts.reactivestreams.Subscriber;
+import org.xxts.reactivestreams.Subscription;
 import org.xxts.reactor.util.annotation.Nullable;
+import org.xxts.reactor.util.function.Tuple2;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +31,14 @@ import java.util.stream.StreamSupport;
  * Scannable is also a useful tool for the advanced user eager to learn which kind
  * of state we usually manage in the package-scope schedulers or operators
  * implementations.
+ * <p>
+ * 一个 Scannable 组件以一种不严格要求内存一致的方式公开状态，并且应该被理解为底层状态的最佳提示。
+ * 通过 {@link #actuals()}，{@link #parents()} 和 {@link #inners()} 获取 {@link Stream}
+ * 对回溯组件图（例如一个 flux operator chain ）非常有用。
+ * 允许访问模式，并可能启用可服务特性。
+ * <p>
+ * Scannable 对于那些渴望了解在 package-scope schedulers 或 operators 的实现中我们通常管理哪种状态的高级用户来说，
+ * 也是一个有用的工具。
  */
 @FunctionalInterface
 public interface Scannable {
@@ -35,6 +46,8 @@ public interface Scannable {
 	/**
 	 * The pattern for matching words unrelated to operator name.
 	 * Used to strip an operator name of various prefixes and suffixes.
+	 * <p>
+	 * 匹配与操作符名称无关的单词。用于去除操作符名称中的各种前缀和后缀。
 	 */
 	Pattern OPERATOR_NAME_UNRELATED_WORDS_PATTERN =
 		Pattern.compile("Parallel|Flux|Mono|Publisher|Subscriber|Fuseable|Operator|Conditional");
@@ -42,11 +55,15 @@ public interface Scannable {
 	/**
 	 * Base class for {@link Scannable} attributes, which all can define a meaningful
 	 * default.
+	 * <p>
+	 * {@link Scannable} 属性的基类，属性都可以定义默认值。
 	 *
 	 * @param <T> the type of data associated with an attribute
-	 * @implNote Note that some attributes define a object-to-T converter, which means their
+	 * @implNote Note that some attributes define an object-to-T converter, which means their
 	 * 		private {@link #tryConvert(Object)} method can safely be used by
 	 * 		{@link Scannable#scan(Attr)}, making them resilient to class cast exceptions.
+	 * 	<br> 注意，一些属性定义了 object-to-T 的转换器，这意味着它们私有的 {@link #tryConvert(Object)} 方法
+	 * 	可以被 {@link Scannable#scan(Attr)} 安全地使用，使它们能够适应类强制转换异常。
 	 */
 	class Attr<T> {
 
@@ -183,15 +200,15 @@ public interface Scannable {
 		public static final Attr<Boolean> TERMINATED = new Attr<>(false);
 
 		/**
-		 * A {@link Stream} of {@link reactor.util.function.Tuple2} representing key/value
-		 * pairs for tagged components. Defaults to {@literal null}.
+		 * A {@link Stream} of {@link Tuple2} representing key/value pairs for tagged components.
+		 * Defaults to {@literal null}.
 		 */
 		public static final Attr<Stream<Tuple2<String, String>>> TAGS = new Attr<>(null);
 
 		/**
-		 * An {@link RunStyle} enum attribute indicating whether or not an operator continues to operate on the same thread.
+		 * An {@link RunStyle} enum attribute indicating whether an operator continues to operate on the same thread.
 		 * Each value provides a different degree of guarantee from weakest {@link RunStyle#UNKNOWN} to strongest {@link RunStyle#SYNC}.
-		 *
+		 * <p>
 		 * Defaults to {@link RunStyle#UNKNOWN}.
 		 */
 		public static final Attr<RunStyle> RUN_STYLE = new Attr<>(RunStyle.UNKNOWN);
@@ -248,7 +265,7 @@ public interface Scannable {
 		}
 
 		/**
-		 * Attempt to convert any {@link Object} instance o into a {@code T}. By default
+		 * Attempt to convert any {@link Object} instance o into a {@code T}. By default,
 		 * unsafe attributes will just try forcing a cast, which can lead to {@link ClassCastException}.
 		 * However, attributes for which {@link #isConversionSafe()} returns true are
 		 * required to not throw an exception (but rather return {@code null} or a Null
@@ -379,10 +396,26 @@ public interface Scannable {
 	}
 
 	/**
-	 * Return a {@link Stream} navigating the {@link org.reactivestreams.Subscriber}
-	 * chain (downward). The current {@link Scannable} is not included.
+	 * Return a {@link Stream} navigating the {@link Subscription}
+	 * chain (upward). The current {@link Scannable} is not included.
+	 * <p>
+	 *     返回一个导航 {@link Subscription} 链（向上）的 {@link Stream}。不包括当前 {@link Scannable}。
+	 * </p>
 	 *
-	 * @return a {@link Stream} navigating the {@link org.reactivestreams.Subscriber}
+	 * @return a {@link Stream} navigating the {@link Subscription}
+	 * chain (upward, current {@link Scannable} not included).
+	 */
+	default Stream<? extends Scannable> parents() {
+		return Attr.recurse(this, Attr.PARENT);
+	}
+
+	/**
+	 * Return a {@link Stream} navigating the {@link Subscriber}
+	 * chain (downward). The current {@link Scannable} is not included.
+	 * <p>
+	 * 返回一个导航 {@link Subscriber} 链（向下）的 {@link Stream}。不包括当前 {@link Scannable}。
+	 *
+	 * @return a {@link Stream} navigating the {@link Subscriber}
 	 * chain (downward, current {@link Scannable} not included).
 	 */
 	default Stream<? extends Scannable> actuals() {
@@ -390,9 +423,12 @@ public interface Scannable {
 	}
 
 	/**
-	 * Return a {@link Stream} of referenced inners (flatmap, multicast etc)
+	 * Return a {@link Stream} of referenced inners (flatmap, multicast etc.)
+	 * <p>
+	 *     返回一个引用内部函数(flatmap, multicast etc.)的 {@link Stream}。
+	 * </p>
 	 *
-	 * @return a {@link Stream} of referenced inners (flatmap, multicast etc)
+	 * @return a {@link Stream} of referenced inners (flatmap, multicast etc.)
 	 */
 	default Stream<? extends Scannable> inners() {
 		return Stream.empty();
@@ -430,6 +466,9 @@ public interface Scannable {
 	/**
 	 * Return a meaningful {@link String} representation of this {@link Scannable} in
 	 * its chain of {@link #parents()} and {@link #actuals()}.
+	 * <p>
+	 *     返回这当前 {@link Scannable} 在 {@link #parents()} 和 {@link #actuals()} 链中的一个有意义的 {@link String} 表示。
+	 * </p>
 	 */
 	default String stepName() {
 		/*
@@ -470,11 +509,10 @@ public interface Scannable {
 	 * @return a {@link Stream} of {@link #stepName()} for each discovered step in the {@link Scannable} chain
 	 */
 	default Stream<String> steps() {
-		List<Scannable> chain = new ArrayList<>();
-		chain.addAll(parents().collect(Collectors.toList()));
+        List<Scannable> chain = new ArrayList<>(parents().toList());
 		Collections.reverse(chain);
 		chain.add(this);
-		chain.addAll(actuals().collect(Collectors.toList()));
+		chain.addAll(actuals().toList());
 
 		List<String> chainNames = new ArrayList<>(chain.size());
 		for (int i = 0; i < chain.size(); i++) {
@@ -494,17 +532,6 @@ public interface Scannable {
 		}
 
 		return chainNames.stream();
-	}
-
-	/**
-	 * Return a {@link Stream} navigating the {@link org.reactivestreams.Subscription}
-	 * chain (upward). The current {@link Scannable} is not included.
-	 *
-	 * @return a {@link Stream} navigating the {@link org.reactivestreams.Subscription}
-	 * chain (upward, current {@link Scannable} not included).
-	 */
-	default Stream<? extends Scannable> parents() {
-		return Attr.recurse(this, Attr.PARENT);
 	}
 
 	/**
