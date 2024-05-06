@@ -17,7 +17,6 @@ public interface Logger {
      */
     @FunctionalInterface
     interface ChoiceOfMessageSupplier {
-
         /**
          * Provide two possible versions of a message {@link String}, depending on the
          * level of detail desired.

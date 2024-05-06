@@ -110,28 +110,6 @@ public abstract class Loggers {
     }
 
     /**
-     * Use a custom type of {@link Logger} created through the provided {@link Function},
-     * which takes a logger name as input.
-     * <p>
-     * The previously active logger factory is simply replaced without
-     * any particular clean-up.
-     *
-     * <h4>Thread-safety</h4>
-     * <p>
-     * Given logger acquisition function <em>must</em> be thread-safe.
-     * It means that it is user responsibility to ensure that any internal state and cache
-     * used by the provided function is properly synchronized.
-     *
-     * @param loggerFactory the {@link Function} that provides a (possibly cached) {@link Logger}
-     *                      given a name.
-     */
-    public static void useCustomLoggers(final Function<String, ? extends Logger> loggerFactory) {
-        String name = Loggers.class.getName();
-        LOGGER_FACTORY = loggerFactory;
-        loggerFactory.apply(name).debug("Using custom logging");
-    }
-
-    /**
      * Force the usage of JDK-based {@link Logger Loggers}, even if SLF4J is available
      * on the classpath.
      * <p>
@@ -161,6 +139,28 @@ public abstract class Loggers {
     }
 
     /**
+     * Use a custom type of {@link Logger} created through the provided {@link Function},
+     * which takes a logger name as input.
+     * <p>
+     * The previously active logger factory is simply replaced without
+     * any particular clean-up.
+     *
+     * <h4>Thread-safety</h4>
+     * <p>
+     * Given logger acquisition function <em>must</em> be thread-safe.
+     * It means that it is user responsibility to ensure that any internal state and cache
+     * used by the provided function is properly synchronized.
+     *
+     * @param loggerFactory the {@link Function} that provides a (possibly cached) {@link Logger}
+     *                      given a name.
+     */
+    public static void useCustomLoggers(final Function<String, ? extends Logger> loggerFactory) {
+        String name = Loggers.class.getName();
+        LOGGER_FACTORY = loggerFactory;
+        loggerFactory.apply(name).debug("Using custom logging");
+    }
+
+    /**
      * Get a {@link Logger}.
      * <p>
      * For a notion of how the backing implementation is chosen, see
@@ -186,7 +186,6 @@ public abstract class Loggers {
     }
 
     private static class Slf4JLoggerFactory implements Function<String, Logger> {
-
         @Override
         public Logger apply(String name) {
             return new Loggers.Slf4JLogger(org.slf4j.LoggerFactory.getLogger(name));
@@ -298,6 +297,14 @@ public abstract class Loggers {
         @Override
         public void error(String msg, Throwable t) {
             logger.error(msg, t);
+        }
+    }
+
+
+    private static class JdkLoggerFactory implements Function<String, Logger> {
+        @Override
+        public Logger apply(String name) {
+            return new Loggers.JdkLogger(java.util.logging.Logger.getLogger(name));
         }
     }
 
@@ -432,13 +439,37 @@ public abstract class Loggers {
         }
     }
 
-    private static class JdkLoggerFactory implements Function<String, Logger> {
+    record ConsoleLoggerFactory(boolean verbose) implements Function<String, Logger> {
+
+        private static final Map<ConsoleLoggerKey, WeakReference<Logger>> consoleLoggers = new WeakHashMap<>();
 
         @Override
         public Logger apply(String name) {
-            return new Loggers.JdkLogger(java.util.logging.Logger.getLogger(name));
+            final ConsoleLoggerKey key = new ConsoleLoggerKey(name, verbose);
+            synchronized (consoleLoggers) {
+                final WeakReference<Logger> ref = consoleLoggers.get(key);
+                Logger cached = ref == null ? null : ref.get();
+                if (cached == null) {
+                    cached = new ConsoleLogger(key);
+                    consoleLoggers.put(key, new WeakReference<>(cached));
+                }
+                return cached;
+            }
         }
     }
+
+    /**
+     * A key object to serve a dual purpose:
+     * <ul>
+     *     <li>Allow consistent identification of cached console loggers using not
+     *     only its name, but also its verbosity level</li>
+     *     <li>Provide an object eligible to cache eviction. Contrary to a logger or
+     *     a string (logger name) object, this is a good candidate for weak reference key,
+     *     because it should be held only internally by the attached logger and by the
+     *     logger cache (as evictable key).</li>
+     * </ul>
+     */
+    private record ConsoleLoggerKey(String name, boolean verbose) { }
 
     /**
      * A {@link Logger} that has all levels enabled. error and warn log to {@code System.err}
@@ -470,7 +501,7 @@ public abstract class Loggers {
         }
 
         @Nullable
-        final String format(@Nullable String from, @Nullable Object... arguments) {
+        String format(@Nullable String from, @Nullable Object... arguments) {
             if (from != null) {
                 String computed = from;
                 if (arguments != null) {
@@ -609,41 +640,6 @@ public abstract class Loggers {
         @Override
         public String toString() {
             return "ConsoleLogger[name=" + getName() + ", verbose=" + identifier.verbose + "]";
-        }
-    }
-
-    /**
-     * A key object to serve a dual purpose:
-     * <ul>
-     *     <li>Allow consistent identification of cached console loggers using not
-     *     only its name, but also its verbosity level</li>
-     *     <li>Provide an object eligible to cache eviction. Contrary to a logger or
-     *     a string (logger name) object, this is a good candidate for weak reference key,
-     *     because it should be held only internally by the attached logger and by the
-     *     logger cache (as evictable key).</li>
-     * </ul>
-     */
-    private record ConsoleLoggerKey(String name, boolean verbose) {
-
-    }
-
-    record ConsoleLoggerFactory(boolean verbose) implements Function<String, Logger> {
-
-        private static final Map<ConsoleLoggerKey, WeakReference<Logger>> consoleLoggers = new WeakHashMap<>();
-
-        @Override
-        public Logger apply(String name) {
-            final ConsoleLoggerKey key = new ConsoleLoggerKey(name, verbose);
-            synchronized (consoleLoggers) {
-                final WeakReference<Logger> ref = consoleLoggers.get(key);
-                Logger cached = ref == null ? null : ref.get();
-                if (cached == null) {
-                    cached = new ConsoleLogger(key);
-                    consoleLoggers.put(key, new WeakReference<>(cached));
-                }
-
-                return cached;
-            }
         }
     }
 

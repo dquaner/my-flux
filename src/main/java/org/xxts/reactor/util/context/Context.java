@@ -44,7 +44,8 @@ import java.util.Objects;
 public interface Context extends ContextView {
 
     /**
-     * Return an empty {@link Context}
+     * Return an empty {@link Context}.
+     * <br/>返回一个空的 {@link Context}。
      *
      * @return an empty {@link Context}
      */
@@ -154,7 +155,7 @@ public interface Context extends ContextView {
         int size = Objects.requireNonNull(map, "map").size();
         if (size == 0) return Context.empty();
         if (size <= 5) {
-            Map.Entry[] entries = map.entrySet().toArray(new Map.Entry[size]);
+            Map.Entry<?, ?>[] entries = map.entrySet().toArray(new Map.Entry[size]);
             switch (size) {
                 case 1:
                     return new Context1(entries[0].getKey(), entries[0].getValue());
@@ -182,9 +183,7 @@ public interface Context extends ContextView {
         // we need to check every key/value before passing it to ContextN(Map)
         map.forEach((key, value) -> {
             Objects.requireNonNull(key, "null key found");
-            if (value == null) {
-                throw new NullPointerException("null value for key " + key);
-            }
+            Objects.requireNonNull(value, "null value for key " + key);
         });
         @SuppressWarnings("unchecked")
         final Map<Object, Object> generifiedMap = (Map<Object, Object>) map;
@@ -225,7 +224,7 @@ public interface Context extends ContextView {
      * @param value the value to associate to the key in the new {@link Context}
      *
      * @return a new {@link Context} including the provided key/value
-     * @throws NullPointerException if either the key or value are null
+     * @throws NullPointerException if either the key or value is null
      */
     Context put(Object key, Object value);
 
@@ -270,8 +269,7 @@ public interface Context extends ContextView {
     default Context putAll(ContextView other) {
         if (other.isEmpty()) return this;
 
-        if (other instanceof CoreContext) {
-            CoreContext coreContext = (CoreContext) other;
+        if (other instanceof CoreContext coreContext) {
             return coreContext.putAllInto(this);
         }
 

@@ -17,15 +17,15 @@ record Context5(Object key1, Object value1, Object key2, Object value2, Object k
              Object key5, Object value5) {
         //TODO merge null check and duplicate check in the util method
         Context4.checkKeys(key1, key2, key3, key4, key5);
-        this.key1 = Objects.requireNonNull(key1, "key1");
+        this.key1 = key1;
         this.value1 = Objects.requireNonNull(value1, "value1");
-        this.key2 = Objects.requireNonNull(key2, "key2");
+        this.key2 = key2;
         this.value2 = Objects.requireNonNull(value2, "value2");
-        this.key3 = Objects.requireNonNull(key3, "key3");
+        this.key3 = key3;
         this.value3 = Objects.requireNonNull(value3, "value3");
-        this.key4 = Objects.requireNonNull(key4, "key4");
+        this.key4 = key4;
         this.value4 = Objects.requireNonNull(value4, "value4");
-        this.key5 = Objects.requireNonNull(key5, "key5");
+        this.key5 = key5;
         this.value5 = Objects.requireNonNull(value5, "value5");
     }
 

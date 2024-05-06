@@ -1,24 +1,15 @@
 package org.xxts.reactor.core.publisher;
 
-
-import org.xxts.reactivestreams.Publisher;
-import org.xxts.reactivestreams.Subscriber;
-import org.xxts.reactor.util.Logger;
-import org.xxts.reactor.util.Loggers;
-import org.xxts.reactor.util.annotation.Nullable;
-import org.xxts.reactor.util.context.Context;
-import org.xxts.reactor.util.context.ContextView;
-
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+
 /**
  * A set of overridable lifecycle hooks that can be used for cross-cutting
  * added behavior on {@link Flux}/{@link Mono} operators.
- * <br> 一组可重写的生命周期钩子，可用于在 {@link Flux}/{@link Mono} 操作符上横向添加切点行为。
  */
 public abstract class Hooks {
 
@@ -29,9 +20,9 @@ public abstract class Hooks {
      * @param <T> the type of data emitted by the {@link Publisher}
      * @return the {@link Publisher} wrapped as a {@link Flux}, or the original if it was a {@link Flux}
      */
-//    public static <T> Flux<T> convertToFluxBypassingHooks(Publisher<T> publisher) {
-//        return Flux.wrap(publisher);
-//    }
+    public static <T> Flux<T> convertToFluxBypassingHooks(Publisher<T> publisher) {
+        return Flux.wrap(publisher);
+    }
 
     /**
      * Utility method to convert a {@link Publisher} to a {@link Mono} without applying {@link Hooks}.
@@ -44,9 +35,9 @@ public abstract class Hooks {
      * @param <T> the type of data emitted by the {@link Publisher}
      * @return the {@link Publisher} wrapped as a {@link Mono}, or the original if it was a {@link Mono}
      */
-//    public static <T> Mono<T> convertToMonoBypassingHooks(Publisher<T> publisher, boolean enforceMonoContract) {
-//        return Mono.wrap(publisher, enforceMonoContract);
-//    }
+    public static <T> Mono<T> convertToMonoBypassingHooks(Publisher<T> publisher, boolean enforceMonoContract) {
+        return Mono.wrap(publisher, enforceMonoContract);
+    }
 
 
     /**
@@ -298,13 +289,13 @@ public abstract class Hooks {
      * <p>
      * Use {@link #resetOnNextDropped()} to reset to the default strategy of logging.
      */
-//    public static void onNextDroppedFail() {
-//        log.debug("Enabling failure mode for onNextDropped");
-//
-//        synchronized(log) {
-//            onNextDroppedHook = n -> {throw Exceptions.failWithCancel();};
-//        }
-//    }
+    public static void onNextDroppedFail() {
+        log.debug("Enabling failure mode for onNextDropped");
+
+        synchronized(log) {
+            onNextDroppedHook = n -> {throw Exceptions.failWithCancel();};
+        }
+    }
 
     /**
      * Enable operator stack recorder that captures a declaration stack whenever an
@@ -329,7 +320,7 @@ public abstract class Hooks {
 
     /**
      * Set the custom global error mode hook for operators that support resuming
-     * during an error in their {@link Subscriber#onNext(Object)}.
+     * during an error in their {@link org.reactivestreams.Subscriber#onNext(Object)}.
      * <p>
      * The hook is a {@link BiFunction} of {@link Throwable} and potentially null {@link Object}.
      * If it is also a {@link java.util.function.BiPredicate}, its
@@ -522,26 +513,26 @@ public abstract class Hooks {
      * their overloads).
      * @since 3.5.3
      */
-//    public static void enableAutomaticContextPropagation() {
-//        if (ContextPropagationSupport.isContextPropagationOnClasspath) {
-//            Schedulers.onScheduleHook(CONTEXT_IN_THREAD_LOCALS_KEY,
-//                    ContextPropagation.scopePassingOnScheduleHook());
-//            ContextPropagationSupport.propagateContextToThreadLocals = true;
-//            ContextPropagation.configureContextSnapshotFactory(true);
-//        }
-//    }
+    public static void enableAutomaticContextPropagation() {
+        if (ContextPropagationSupport.isContextPropagationOnClasspath) {
+            Schedulers.onScheduleHook(CONTEXT_IN_THREAD_LOCALS_KEY,
+                    ContextPropagation.scopePassingOnScheduleHook());
+            ContextPropagationSupport.propagateContextToThreadLocals = true;
+            ContextPropagation.configureContextSnapshotFactory(true);
+        }
+    }
 
     /**
      * Globally disables automatic context propagation to {@link ThreadLocal}s.
      * @see #enableAutomaticContextPropagation()
      */
-//    public static void disableAutomaticContextPropagation() {
-//        if (ContextPropagationSupport.isContextPropagationOnClasspath) {
-//            Hooks.removeQueueWrapper(CONTEXT_IN_THREAD_LOCALS_KEY);
-//            Schedulers.resetOnScheduleHook(CONTEXT_IN_THREAD_LOCALS_KEY);
-//            ContextPropagationSupport.propagateContextToThreadLocals = false;
-//        }
-//    }
+    public static void disableAutomaticContextPropagation() {
+        if (ContextPropagationSupport.isContextPropagationOnClasspath) {
+            Hooks.removeQueueWrapper(CONTEXT_IN_THREAD_LOCALS_KEY);
+            Schedulers.resetOnScheduleHook(CONTEXT_IN_THREAD_LOCALS_KEY);
+            ContextPropagationSupport.propagateContextToThreadLocals = false;
+        }
+    }
 
     @Nullable
     @SuppressWarnings("unchecked")
@@ -659,50 +650,50 @@ public abstract class Hooks {
     Hooks() {
     }
 
-//    /**
-//     *
-//     * @deprecated Should only be used by the instrumentation, DOES NOT guarantee any compatibility
-//     */
-//    @Nullable
-//    @Deprecated
-//    public static <T, P extends Publisher<T>> Publisher<T> addReturnInfo(@Nullable P publisher, String method) {
-//        if (publisher == null) {
-//            return null;
-//        }
-//        return addAssemblyInfo(publisher, new MethodReturnSnapshot(method));
-//    }
+    /**
+     *
+     * @deprecated Should only be used by the instrumentation, DOES NOT guarantee any compatibility
+     */
+    @Nullable
+    @Deprecated
+    public static <T, P extends Publisher<T>> Publisher<T> addReturnInfo(@Nullable P publisher, String method) {
+        if (publisher == null) {
+            return null;
+        }
+        return addAssemblyInfo(publisher, new MethodReturnSnapshot(method));
+    }
 
-//    /**
-//     *
-//     * @deprecated Should only be used by the instrumentation, DOES NOT guarantee any compatibility
-//     */
-//    @Nullable
-//    @Deprecated
-//    public static <T, P extends Publisher<T>> Publisher<T> addCallSiteInfo(@Nullable P publisher, String callSite) {
-//        if (publisher == null) {
-//            return null;
-//        }
-//        return addAssemblyInfo(publisher, new AssemblySnapshot(callSite));
-//    }
+    /**
+     *
+     * @deprecated Should only be used by the instrumentation, DOES NOT guarantee any compatibility
+     */
+    @Nullable
+    @Deprecated
+    public static <T, P extends Publisher<T>> Publisher<T> addCallSiteInfo(@Nullable P publisher, String callSite) {
+        if (publisher == null) {
+            return null;
+        }
+        return addAssemblyInfo(publisher, new AssemblySnapshot(callSite));
+    }
 
-//    static <T, P extends Publisher<T>> Publisher<T> addAssemblyInfo(P publisher, AssemblySnapshot stacktrace) {
-//        if (publisher instanceof Callable) {
-//            if (publisher instanceof Mono) {
-//                return new MonoCallableOnAssembly<>((Mono<T>) publisher, stacktrace);
-//            }
-//            return new FluxCallableOnAssembly<>((Flux<T>) publisher, stacktrace);
-//        }
-//        if (publisher instanceof Mono) {
-//            return new MonoOnAssembly<>((Mono<T>) publisher, stacktrace);
-//        }
-//        if (publisher instanceof ParallelFlux) {
-//            return new ParallelFluxOnAssembly<>((ParallelFlux<T>) publisher, stacktrace);
-//        }
-//        if (publisher instanceof ConnectableFlux) {
-//            return new ConnectableFluxOnAssembly<>((ConnectableFlux<T>) publisher, stacktrace);
-//        }
-//        return new FluxOnAssembly<>((Flux<T>) publisher, stacktrace);
-//    }
+    static <T, P extends Publisher<T>> Publisher<T> addAssemblyInfo(P publisher, AssemblySnapshot stacktrace) {
+        if (publisher instanceof Callable) {
+            if (publisher instanceof Mono) {
+                return new MonoCallableOnAssembly<>((Mono<T>) publisher, stacktrace);
+            }
+            return new FluxCallableOnAssembly<>((Flux<T>) publisher, stacktrace);
+        }
+        if (publisher instanceof Mono) {
+            return new MonoOnAssembly<>((Mono<T>) publisher, stacktrace);
+        }
+        if (publisher instanceof ParallelFlux) {
+            return new ParallelFluxOnAssembly<>((ParallelFlux<T>) publisher, stacktrace);
+        }
+        if (publisher instanceof ConnectableFlux) {
+            return new ConnectableFluxOnAssembly<>((ConnectableFlux<T>) publisher, stacktrace);
+        }
+        return new FluxOnAssembly<>((Flux<T>) publisher, stacktrace);
+    }
 
     /**
      * Adds a wrapper for every {@link Queue} used in Reactor.
@@ -784,4 +775,3 @@ public abstract class Hooks {
         return (Queue) QUEUE_WRAPPER.apply(queue);
     }
 }
-

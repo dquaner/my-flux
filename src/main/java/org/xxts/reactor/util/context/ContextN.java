@@ -107,7 +107,7 @@ final class ContextN extends LinkedHashMap<Object, Object>
         if (o != null) {
             return o;
         }
-        throw new NoSuchElementException("Context does not contain key: "+key);
+        throw new NoSuchElementException("Context does not contain key: " + key);
     }
 
     @Override

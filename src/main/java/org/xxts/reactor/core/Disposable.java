@@ -7,13 +7,15 @@ import java.util.function.Supplier;
 
 /**
  * Indicates that a task or resource can be cancelled/disposed.
- * <p>Call to the dispose method is/should be idempotent.
+ * <p>
+ * Call to the dispose method is/should be idempotent(幂等的).
  */
 @FunctionalInterface
 public interface Disposable {
 
     /**
      * Cancel or dispose the underlying task or resource.
+     * <br> 取消或处置底层任务或资源。
      * <p>
      * Implementations are required to make this method idempotent.
      */
@@ -25,6 +27,8 @@ public interface Disposable {
      * Implementations are not required to track disposition and as such may never
      * return {@literal true} even when disposed. However, they MUST only return true
      * when there's a guarantee the resource or task is disposed.
+     * <br> 此方法的实现不需要去追踪处置，如果追踪的话即使在处置时也可能永远不返回 {@literal true}。
+     * 但是，实现必须保证资源或任务被处置了才能返回 {@literal true}。
      *
      * @return {@literal true} when there's a guarantee the resource or task is disposed.
      */
@@ -35,8 +39,8 @@ public interface Disposable {
     /**
      * A {@link Disposable} container that allows updating/replacing its inner Disposable
      * atomically and with respect of disposing the container itself.
-     *
-     * @author Simon Baslé
+     * <br>
+     * 一个 {@link Disposable} 容器，允许自动更新/替换其内部的 {@link Disposable}，并允许处置容器本身。
      */
     interface Swap extends Disposable, Supplier<Disposable> {
 
@@ -68,15 +72,19 @@ public interface Disposable {
      * responsible for disposing them. You can however retake ownership of individual
      * elements by keeping a reference and using {@link #remove(Disposable)}, which puts
      * the responsibility of disposing said elements back in your hands. Note that once
-     * disposed, the container cannot be reused and you will need a new {@link Disposable.Composite}.
-     *
-     * @author Simon Baslé
+     * disposed, the container cannot be reused, and you will need a new {@link Disposable.Composite}.
+     * <br>
+     * 一个 {@link Disposable} 容器，其本身也是 {@link Disposable}。
+     * 通过 {@link #dispose()} 方法可以累积并一起处置 disposables。
+     * 使用 {@link #add(Disposable)} 方法赋予容器所有权，代表容器现在负责处置它们。
+     * 但是，可以通过保留引用并使用 {@link #remove(Disposable)} 来重新获得单个元素的所有权，这将把处置该元素的责任交还给您。
+     * 注意，容器一旦被处置，就不能被重用，您将需要一个新的 {@link Disposable.Composite}。
      */
     interface Composite extends Disposable {
 
         /**
          * Add a {@link Disposable} to this container, if it is not {@link #isDisposed() disposed}.
-         * Otherwise d is disposed immediately.
+         * Otherwise, d is disposed immediately.
          *
          * @param d the {@link Disposable} to add.
          * @return true if the disposable could be added, false otherwise.
@@ -91,6 +99,8 @@ public interface Disposable {
          * disposed while the content of the collection is added, first elements might be
          * effectively added. Stronger consistency is enforced by composites created via
          * {@link Disposables#composite()} variants.
+         * <br> 该默认实现不是原子性的，这意味着如果在添加集合内容的同时处置容器，则可能会有效地添加第一个元素。
+         * 通过 {@link Disposables#composite()} 方法创建的组合实现了更强的一致性。
          * @param ds the collection of Disposables
          * @return true if the operation was successful, false if the container has been disposed
          */

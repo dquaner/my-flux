@@ -27,10 +27,10 @@ public interface CoreSubscriber<T> extends Subscriber<T> {
     /**
      * Request a {@link Context} from dependent components which can include downstream
      * operators during subscribing or a terminal {@link Subscriber}.
-     * <br> 从依赖的组件请求 {@link Context}，该组件可以在订阅或终端 {@link Subscriber} 期间包含下游操作符。
+     * <br> 从依赖的组件请求 {@link Context}，该组件可以在中间或终点 {@link Subscriber} 订阅期间包含下游操作符。
      *
      * @return a resolved context or {@link Context#empty()}
-     *         <br> 已解析的上下文或 {@link Context#empty()}
+     *         <br> 对应的上下文或 {@link Context#empty()}
      */
     default Context currentContext(){
         return Context.empty();
@@ -42,13 +42,13 @@ public interface CoreSubscriber<T> extends Subscriber<T> {
      * state modification occur, thread-safety will be required.
      * <br>
      * 此方法的实现应该在调用 {@link Subscription#request(long)} 之前初始化 {@link #onNext(Object)} 会使用的任何状态。
-     * 如果发生进一步的 {@code onNext} 相关状态的修改，则需要线程安全性。
+     * 如果 {@code onNext} 相关的状态发生了进一步的修改，则需要保证线程安全性。
      * <p>
      *
      * Note that an invalid request {@code <= 0} will not produce an onError and
      * will simply be ignored or reported through a debug-enabled {@link Logger}.
      * <br>
-     * 请注意，无效请求 {@code <= 0} 不会产生 onError，只会被忽略或通过启用调试等级的 {@link Logger} 报告。
+     * 请注意，无效请求 {@code <= 0} 不会产生 onError，只会被忽略或通过启用了 debug level 的 {@link Logger} 报告。
      * <p>
      *
      * {@inheritDoc}
