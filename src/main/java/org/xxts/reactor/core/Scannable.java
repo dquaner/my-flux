@@ -59,16 +59,25 @@ public interface Scannable {
      * <p>
      * {@link Scannable} 属性的基类，属性都可以定义默认值。
      *
-     * @param <T> the type of data associated with an attribute
      * @implNote Note that some attributes define an object-to-T converter, which means their
      * private {@link #tryConvert(Object)} method can safely be used by
      * {@link Scannable#scan(Attr)}, making them resilient to class cast exceptions.
      * <br> 注意，一些属性定义了 object-to-T 的转换器，这意味着它们私有的 {@link #tryConvert(Object)} 方法
      * 可以被 {@link Scannable#scan(Attr)} 安全地使用，使它们能够适应类强制转换异常。
+     *
+     * @param <T> the type of data associated with an attribute
+     *
+     * @see Scannable#scanUnsafe(Attr)
+     * @see Scannable#scan(Attr)
+     * @see Scannable#scanOrDefault(Attr, Object)
      */
     class Attr<T> {
 
         final T defaultValue;
+        /**
+         * 转换不要抛出异常，可以返回 null
+         * @see #tryConvert(Object)
+         */
         final Function<Object, ? extends T> safeConverter;
 
         protected Attr(@Nullable T defaultValue) {
@@ -191,19 +200,50 @@ public interface Scannable {
          * {@link Scannable}, but this attribute will convert these raw results to an
          * {@link Scannable#isScanAvailable() unavailable scan} object in this case.
          * <p>
-         * A reference chain downstream can be navigated via {@link Scannable#actuals()}.
-         * <p>
-         *     直接依赖组件的下游 reference（如果有的话）。
-         *     例如 Flux/Mono 中的 operators 委托给一个 Subscriber，这个 Subscriber 就是使用此 reference key 进行 navigate 的 actual chain。
-         *     Subscribers 并非总是 {@link Scannable}，但这种情况下，这个 Attr 会将这些原始结果转换为
-         *     {@link Scannable#isScanAvailable() unavailable scan} 对象。
+         * 组件直接依赖的下游（如果有的话）的 Attr Key。
+         * 例如 Flux/Mono 中的 operators 委托给一个 Subscriber，这个 Subscriber 就是
+         * 可以使用此 reference key 进行 navigate 的 actual chain。
+         * Subscribers 并非总是 {@link Scannable}，这种情况下，这个 Attr 会将这些原始结果
+         * 转换为 {@link Scannable#isScanAvailable() unavailable scan} 对象。
          * </p>
          * <p>
-         *     下游的参考链可以通过 {@link Scannable#actuals()} 进行导航。
+         * A reference chain downstream can be navigated via {@link Scannable#actuals()}.
+         * <p>
+         * {@link Scannable#actuals()} 使用这个 key 递归导航下游链。
          * </p>
          */
         public static final Attr<Scannable> ACTUAL = new Attr<>(null,
                 Scannable::from);
+
+        /**
+         * Parent key exposes the direct upstream relationship of the scanned component.
+         * It can be a Publisher source to an operator, a Subscription to a Subscriber
+         * (main flow if ambiguous with inner Subscriptions like flatMap), a Scheduler to
+         * a Worker. These types are not always {@link Scannable}, but this attribute
+         * will convert such raw results to an {@link Scannable#isScanAvailable() unavailable scan}
+         * object in this case.
+         * <p>
+         * 该 Attr Key 暴露组件的直接上游。
+         * 它可以是：
+         *  一个 Publisher source 到一个 operator，
+         *  一个 Subscription 到一个 Subscriber (main flow if ambiguous with inner Subscriptions like flatMap)，
+         *  一个 Scheduler 到一个 Worker。
+         * 这些上游并非总是 {@link Scannable}，这种情况下，这个 Attr 会将这些原始结果
+         * 转换为 {@link Scannable#isScanAvailable() unavailable scan} 对象。
+         * </p>
+         * <p>
+         * {@link Scannable#parents()} can be used to navigate the parent chain.
+         * <p>
+         * {@link Scannable#parents()} 使用这个 key 递归导航上游链。
+         * </p>
+         */
+        public static final Attr<Scannable> PARENT = new Attr<>(null,
+                Scannable::from);
+
+        /**
+         * An arbitrary name given to the operator component. Defaults to {@literal null}.
+         */
+        public static final Attr<String> NAME = new Attr<>(null);
 
         /**
          * Indicate that for some purposes a {@link Scannable} should be used as additional
@@ -230,7 +270,14 @@ public interface Scannable {
          * the {@link Attr#LARGE_BUFFERED Attr} {@literal LARGE_BUFFERED}
          * should be used instead. Such operators will attempt to serve a BUFFERED
          * query but will return {@link Integer#MIN_VALUE} when actual buffer size is
-         * oversized for int.
+         * oversize for int.
+         * <p>
+         *     具有积压容量的组件实现的 {@link Integer} 属性。它会公开当前队列的大小或者用户提供的保存数据量。
+         *     注意，一些 operators 和 processors 可以保留大于 {@code Integer.MAX_VALUE} 的积压量，这种情况下
+         *     可以使用 {@link Attr#LARGE_BUFFERED Attr} {@literal LARGE_BUFFERED}。
+         *     带有该属性的 operators 将尝试提供一个 BUFFERED 查询，但当实际 buffer size 超过 Integer 最大值时
+         *     返回 {@link Integer#MIN_VALUE}。
+         * </p>
          */
         public static final Attr<Integer> BUFFERED = new Attr<>(0);
 
@@ -278,24 +325,6 @@ public interface Scannable {
          * and {@code Flux.window} (with overlap) are known to use this attribute.
          */
         public static final Attr<Long> LARGE_BUFFERED = new Attr<>(null);
-
-        /**
-         * An arbitrary name given to the operator component. Defaults to {@literal null}.
-         */
-        public static final Attr<String> NAME = new Attr<>(null);
-
-        /**
-         * Parent key exposes the direct upstream relationship of the scanned component.
-         * It can be a Publisher source to an operator, a Subscription to a Subscriber
-         * (main flow if ambiguous with inner Subscriptions like flatMap), a Scheduler to
-         * a Worker. These types are not always {@link Scannable}, but this attribute
-         * will convert such raw results to an {@link Scannable#isScanAvailable() unavailable scan}
-         * object in this case.
-         * <p>
-         * {@link Scannable#parents()} can be used to navigate the parent chain.
-         */
-        public static final Attr<Scannable> PARENT = new Attr<>(null,
-                Scannable::from);
 
         /**
          * A key that links a {@link Scannable} to another {@link Scannable} it runs on.
@@ -386,8 +415,10 @@ public interface Scannable {
             SYNC;
         }
 
-        static Stream<? extends Scannable> recurse(Scannable _s,
-                                                   Attr<Scannable> key) {
+        /**
+         * 递归
+         */
+        static Stream<? extends Scannable> recurse(Scannable _s, Attr<Scannable> key) {
             Scannable s = Scannable.from(_s.scan(key));
             if (!s.isScanAvailable()) {
                 return Stream.empty();
@@ -416,6 +447,9 @@ public interface Scannable {
      * Attempt to cast the Object to a {@link Scannable}. Return {@link Attr#NULL_SCAN} if
      * the value is null, or {@link Attr#UNAVAILABLE_SCAN} if the value is not a {@link Scannable}.
      * Both are constant {@link Scannable} that return false on {@link Scannable#isScanAvailable}.
+     * <p>
+     *     尝试转换一个 Object 到 {@link Scannable}。
+     * </p>
      *
      * @param o a reference to cast
      * @return the cast {@link Scannable}, or one of two default {@link Scannable} instances
@@ -429,6 +463,20 @@ public interface Scannable {
             return ((Scannable) o);
         }
         return Attr.UNAVAILABLE_SCAN;
+    }
+
+
+    /**
+     * Return a {@link Stream} navigating the {@link Subscriber}
+     * chain (downward). The current {@link Scannable} is not included.
+     * <p>
+     * 返回一个导航 {@link Subscriber} 链（向下）的 {@link Stream}。不包括当前 {@link Scannable}。
+     *
+     * @return a {@link Stream} navigating the {@link Subscriber}
+     * chain (downward, current {@link Scannable} not included).
+     */
+    default Stream<? extends Scannable> actuals() {
+        return Attr.recurse(this, Attr.ACTUAL);
     }
 
     /**
@@ -446,22 +494,9 @@ public interface Scannable {
     }
 
     /**
-     * Return a {@link Stream} navigating the {@link Subscriber}
-     * chain (downward). The current {@link Scannable} is not included.
-     * <p>
-     * 返回一个导航 {@link Subscriber} 链（向下）的 {@link Stream}。不包括当前 {@link Scannable}。
-     *
-     * @return a {@link Stream} navigating the {@link Subscriber}
-     * chain (downward, current {@link Scannable} not included).
-     */
-    default Stream<? extends Scannable> actuals() {
-        return Attr.recurse(this, Attr.ACTUAL);
-    }
-
-    /**
      * Return a {@link Stream} of referenced inners (flatmap, multicast etc.)
      * <p>
-     * 返回一个引用内部函数(flatmap, multicast etc.)的 {@link Stream}。
+     * 返回一个内部函数(flatmap, multicast etc.) {@link Stream}。
      * </p>
      *
      * @return a {@link Stream} of referenced inners (flatmap, multicast etc.)
@@ -575,9 +610,17 @@ public interface Scannable {
      * implementors should take care to return values of the correct type, and return
      * {@literal null} if no specific value is available.
      * <p>
+     *     在一个组件内部使用此方法来定义它的 key-value mappings in a single place。
+     *     虽然此方法忽略 {@link Attr} key 的泛型，
+     *     但具体实现应该注意返回正确类型的值，以及在指定值不可用时返回 null。
+     * </p>
+     * <p>
      * For public consumption of attributes, prefer using {@link #scan(Attr)}, which will
      * return a typed value and fall back to the key's default if the component didn't
      * define any mapping.
+     * <p>
+     *     对于公共使用的属性，推荐使用 {@link #scan(Attr)}，它会返回指定类型的值，并且在组件没有定义 mapping 时返回默认值。
+     * </p>
      *
      * @param key a {@link Attr} to resolve for the component.
      * @return the value associated to the key for that specific component, or null if none.
@@ -590,14 +633,18 @@ public interface Scannable {
      * associated value specific to that component, or the default value associated with
      * the key, or null if the attribute doesn't make sense for that particular component
      * and has no sensible default.
+     * <p>
+     *     检查一个组件的指定 {@link Attr attribute}，返回相关值，或者 key Attr 的默认值。
+     *     如果这个 key Attr 对于该特定组件没有意义并且没有合理的默认值，则返回 null。
+     * </p>
      *
      * @param key a {@link Attr} to resolve for the component.
      * @return a value associated to the key or null if unmatched or unresolved
      */
     @Nullable
     default <T> T scan(Attr<T> key) {
-        //note tryConvert will just plain cast most of the time
-        //except e.g. for Attr<Scannable>
+        // note tryConvert will just plain cast most of the time
+        // except e.g. for Attr<Scannable>
         T value = key.tryConvert(scanUnsafe(key));
         if (value == null)
             return key.defaultValue();
@@ -607,7 +654,7 @@ public interface Scannable {
     /**
      * Introspect a component's specific state {@link Attr attribute}. If there's no
      * specific value in the component for that key, fall back to returning the
-     * provided non null default.
+     * provided non-null default.
      *
      * @param key          a {@link Attr} to resolve for the component.
      * @param defaultValue a fallback value if key resolve to {@literal null}
