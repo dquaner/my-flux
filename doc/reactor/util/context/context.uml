@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>org.xxts.reactor.util.context</OriginalElement>
+  <nodes>
+    <node x="1542.6096270337523" y="2573.368575891281">java.util.function.Consumer</node>
+    <node x="373.6861271534136" y="3264.762774569317">org.xxts.reactor.util.context.Context4</node>
+    <node x="499.2599587570519" y="2262.5537667932917">org.xxts.reactor.util.context.Context</node>
+    <node x="41.14473250394258" y="2860.033270681304">org.xxts.reactor.util.context.Context0</node>
+    <node x="567.2599587570519" y="1979.803766793292">org.xxts.reactor.util.context.ContextView</node>
+    <node x="-65.35522625310921" y="3264.762774569317">org.xxts.reactor.util.context.Context3</node>
+    <node x="391.4523250090232" y="2860.033270681304">org.xxts.reactor.util.context.Context1</node>
+    <node x="601.7599587570519" y="2653.3037667932917">org.xxts.reactor.util.context.CoreContext</node>
+    <node x="1019.9347928954021" y="2095.785146713138">java.util.LinkedHashMap</node>
+    <node x="825.7274805599365" y="3264.762774569317">org.xxts.reactor.util.context.Context5</node>
+    <node x="1142.7175586269448" y="2801.273960641228">org.xxts.reactor.util.context.ContextN</node>
+    <node x="1542.6096270337523" y="2669.785146713138">java.util.function.BiConsumer</node>
+    <node x="741.7599175141038" y="2860.033270681304">org.xxts.reactor.util.context.Context2</node>
+  </nodes>
+  <notes>
+    <note x="-73.13243400824302" y="2230.3037667932917">
+      <node>org.xxts.reactor.util.context.Context</node>
+      <value>\n  A key/value store that is propagated between components such as operators via the\n   context protocol. Contexts are ideal to transport orthogonal information such as\n   tracing or security tokens.\n  &lt;br&gt;\n  通过上下文协议在操作符等组件之间传播的键/值对集合的只读视图。\n  上下文是传输正交信息(指两个或多个序列信号之间存在的特定的关系，如追踪或安全令牌)的理想选择。\n  &lt;p&gt;\n \n  &lt;a href=\&quot;psi_element://org.xxts.reactor.util.context.Context\&quot;&gt;&lt;code style='font-size:100%;'&gt;Context&lt;/code&gt;&lt;/a&gt; implementations are thread-safe and immutable: mutative operations like\n  &lt;a href=\&quot;psi_element://org.xxts.reactor.util.context.Context#put(java.lang.Object, java.lang.Object)\&quot;&gt;&lt;code style='font-size:100%;'&gt;put(Object, Object)&lt;/code&gt;&lt;/a&gt; will in fact return a new &lt;a href=\&quot;psi_element://org.xxts.reactor.util.context.Context\&quot;&gt;&lt;code style='font-size:100%;'&gt;Context&lt;/code&gt;&lt;/a&gt; instance.\n  &lt;br&gt;\n  &lt;a href=\&quot;psi_element://org.xxts.reactor.util.context.Context\&quot;&gt;&lt;code style='font-size:100%;'&gt;Context&lt;/code&gt;&lt;/a&gt; 实现是线程安全且不可变的：像 &lt;a href=\&quot;psi_element://org.xxts.reactor.util.context.Context#put(java.lang.Object, java.lang.Object)\&quot;&gt;&lt;code style='font-size:100%;'&gt;put(Object, Object)&lt;/code&gt;&lt;/a&gt; 这样的可变操作\n  实际上会返回一个新的 &lt;a href=\&quot;psi_element://org.xxts.reactor.util.context.Context\&quot;&gt;&lt;code style='font-size:100%;'&gt;Context&lt;/code&gt;&lt;/a&gt; 实例。\n  &lt;p&gt;\n \n  Note that contexts are optimized for low cardinality key/value storage, and a user\n  might want to associate a dedicated mutable structure to a single key to represent his\n  own context instead of using multiple &lt;a href=\&quot;psi_element://org.xxts.reactor.util.context.Context#put(java.lang.Object, java.lang.Object)\&quot;&gt;&lt;code style='font-size:100%;'&gt;put&lt;/code&gt;&lt;/a&gt;, which could be more costly.\n  Past five user key/value pair, the &lt;a href=\&quot;psi_element://org.xxts.reactor.util.context.Context\&quot;&gt;&lt;code style='font-size:100%;'&gt;Context&lt;/code&gt;&lt;/a&gt; will use a copy-on-write\n  implementation backed by a new &lt;a href=\&quot;psi_element://java.util.Map\&quot;&gt;&lt;code style='font-size:100%;'&gt;Map&lt;/code&gt;&lt;/a&gt; on each &lt;a href=\&quot;psi_element://org.xxts.reactor.util.context.Context#put(java.lang.Object, java.lang.Object)\&quot;&gt;&lt;code style='font-size:100%;'&gt;put&lt;/code&gt;&lt;/a&gt;.\n  &lt;br&gt;\n  注意：上下文针对的低基数键/值存储进行了优化，\n  用户可能希望将一个专用的可变结构关联到单个键上以表示自己的上下文，而不是使用多次 &lt;a href=\&quot;psi_element://org.xxts.reactor.util.context.Context#put(java.lang.Object, java.lang.Object)\&quot;&gt;&lt;code style='font-size:100%;'&gt;put&lt;/code&gt;&lt;/a&gt; 方法，但这种操作可能更昂贵。\n  超过5个用户键/值对后，&lt;a href=\&quot;psi_element://org.xxts.reactor.util.context.Context\&quot;&gt;&lt;code style='font-size:100%;'&gt;Context&lt;/code&gt;&lt;/a&gt; 将使用写时复制的实现方式，在每次 &lt;a href=\&quot;psi_element://org.xxts.reactor.util.context.Context#put(java.lang.Object, java.lang.Object)\&quot;&gt;&lt;code style='font-size:100%;'&gt;put&lt;/code&gt;&lt;/a&gt; 时创建一个新的 &lt;a href=\&quot;psi_element://java.util.Map\&quot;&gt;&lt;code style='font-size:100%;'&gt;Map&lt;/code&gt;&lt;/a&gt;。\n  &lt;br&gt;\n  解释：\n  1. 低基数意思是存储的键/值对的种类或数量相对较少；\n  2. Context{0-5} 直接持有键值对，ContextN 继承自 LinkedHashMap；\n  3. 更新频繁或数据结构较庞大时，多次 &lt;a href=\&quot;psi_element://org.xxts.reactor.util.context.Context#put(java.lang.Object, java.lang.Object)\&quot;&gt;&lt;code style='font-size:100%;'&gt;put&lt;/code&gt;&lt;/a&gt; 操作成本较高。\n  &lt;br&gt;\n  然后呢？\n  不知道理解是否正确：因为用户可能希望将一个专用的可变结构关联到单个键上以表示自己的上下文，就代表着低基数的上下文用例比较多，且每次\n  更新的数据结构庞大，如果统一使用 Map 结构，性能比较低。\n  但不论怎样，每次 put 返回的都是新建的实例。\n</value>
+      <edge>
+        <point x="-225.0" y="-4.25" />
+        <point x="261.0" y="0.0" />
+      </edge>
+    </note>
+    <note x="126.86756599175692" y="2657.8037667932917">
+      <node>org.xxts.reactor.util.context.CoreContext</node>
+      <value>\n  Abstract base to optimize interactions between reactor core &lt;a href=\&quot;psi_element://org.xxts.reactor.util.context.Context\&quot;&gt;&lt;code style='font-size:100%;'&gt;Context&lt;/code&gt;&lt;/a&gt; implementations.\n  &lt;br&gt;\n  抽象基础，用来优化 reactor 核心 &lt;a href=\&quot;psi_element://org.xxts.reactor.util.context.Context\&quot;&gt;&lt;code style='font-size:100%;'&gt;Context&lt;/code&gt;&lt;/a&gt; 实现之间的交互。\n</value>
+      <edge>
+        <point x="-122.5" y="0.0" />
+        <point x="161.0" y="0.0" />
+      </edge>
+    </note>
+    <note x="54.86756599175703" y="1992.8037667932917">
+      <node>org.xxts.reactor.util.context.ContextView</node>
+      <value>\n  A read-only view of a collection of key/value pairs that is propagated between components\n  such as operators via the context protocol. Contexts are ideal to transport orthogonal\n  information such as tracing or security tokens.\n  &lt;br&gt;\n  通过上下文协议在操作符等组件之间传播的键/值对集合的只读视图。\n  上下文是传输正交信息(指两个或多个序列信号之间存在的特定的关系，如追踪或安全令牌)的理想选择。\n \n  &lt;p&gt;\n  &lt;a href=\&quot;psi_element://org.xxts.reactor.util.context.Context\&quot;&gt;&lt;code style='font-size:100%;'&gt;Context&lt;/code&gt;&lt;/a&gt; is an immutable variant of the same key/value pairs structure which exposes\n  a write API that returns new instances on each write.\n  &lt;br&gt;\n  &lt;a href=\&quot;psi_element://org.xxts.reactor.util.context.Context\&quot;&gt;&lt;code style='font-size:100%;'&gt;Context&lt;/code&gt;&lt;/a&gt; 是同一键/值对结构的不可变变量，它提供了一个写API，在每次写入时返回新实例。\n</value>
+      <edge>
+        <point x="-157.0" y="-4.547473508864641E-13" />
+        <point x="197.0" y="0.0" />
+      </edge>
+    </note>
+  </notes>
+  <edges>
+    <edge source="org.xxts.reactor.util.context.ContextN" target="java.util.LinkedHashMap" relationship="GENERALIZATION">
+      <point x="-93.78276573154267" y="-203.5" />
+      <point x="0.0" y="324.5" />
+    </edge>
+    <edge source="org.xxts.reactor.util.context.Context5" target="org.xxts.reactor.util.context.CoreContext" relationship="REALIZATION">
+      <point x="48.03243695416745" y="-247.5" />
+      <point x="1073.2599175141038" y="3243.8980226253107" />
+      <point x="723.6061212615634" y="3243.8980226253107" />
+      <point x="723.6061212615634" y="2773.6636841497043" />
+      <point x="-2.2136871784017558" y="59.85991735641255" />
+    </edge>
+    <edge source="org.xxts.reactor.util.context.Context4" target="org.xxts.reactor.util.context.CoreContext" relationship="REALIZATION">
+      <point x="-204.5" y="188.0" />
+      <point x="578.1861271534136" y="3689.262774569317" />
+      <point x="578.1861271534136" y="3243.8980226253107" />
+      <point x="723.6061212615634" y="3243.8980226253107" />
+      <point x="723.6061212615634" y="2782.0559597395445" />
+      <point x="724.2599587570519" y="2782.0559597395445" />
+      <point x="724.2599587570519" y="2713.8037667932917" />
+      <point x="122.5" y="0.0" />
+    </edge>
+    <edge source="org.xxts.reactor.util.context.Context3" target="org.xxts.reactor.util.context.CoreContext" relationship="REALIZATION">
+      <point x="-109.00004124294821" y="-203.5" />
+      <point x="23.644732503942578" y="3243.8980226253107" />
+      <point x="723.6061212615634" y="3243.8980226253107" />
+      <point x="723.6061212615634" y="2728.8037667932917" />
+      <point x="-122.5" y="15.0" />
+    </edge>
+    <edge source="org.xxts.reactor.util.context.Context2" target="org.xxts.reactor.util.context.CoreContext" relationship="REALIZATION">
+      <point x="-0.622988134121897" y="-180.50677956039635" />
+      <point x="898.1369293799819" y="2817.1685187372977" />
+      <point x="723.4113154375752" y="2817.1685187372977" />
+      <point x="-0.8486433194766505" y="55.76478577963735" />
+    </edge>
+    <edge source="org.xxts.reactor.util.context.ContextN" target="java.util.function.Consumer" relationship="REALIZATION">
+      <point x="149.71723426845733" y="-203.5" />
+      <point x="1493.272209964577" y="2801.273960641228" />
+      <point x="1493.272209964577" y="2610.868575891281" />
+      <point x="-146.0" y="0.0" />
+    </edge>
+    <edge source="org.xxts.reactor.util.context.Context1" target="org.xxts.reactor.util.context.CoreContext" relationship="REALIZATION">
+      <point x="60.80763374802871" y="-159.5" />
+      <point x="609.2599587570519" y="2817.1685187372977" />
+      <point x="723.5506574711553" y="2817.1685187372977" />
+      <point x="-0.7093012858965722" y="44.84443490823696" />
+    </edge>
+    <edge source="org.xxts.reactor.util.context.Context" target="org.xxts.reactor.util.context.ContextView" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-169.5" />
+      <point x="0.0" y="115.5" />
+    </edge>
+    <edge source="org.xxts.reactor.util.context.Context0" target="org.xxts.reactor.util.context.CoreContext" relationship="REALIZATION">
+      <point x="0.0" y="-149.5" />
+      <point x="198.14473250394258" y="2817.1685187372977" />
+      <point x="723.5506574711553" y="2817.1685187372977" />
+      <point x="-0.7093012858965722" y="57.12982963856257" />
+    </edge>
+    <edge source="org.xxts.reactor.util.context.ContextN" target="org.xxts.reactor.util.context.CoreContext" relationship="REALIZATION">
+      <point x="-108.78276573154267" y="-203.5" />
+      <point x="1230.934792895402" y="2817.1685187372977" />
+      <point x="723.6061212615634" y="2817.1685187372977" />
+      <point x="723.6061212615634" y="2762.285146713138" />
+      <point x="122.5" y="48.481379919846404" />
+    </edge>
+    <edge source="org.xxts.reactor.util.context.CoreContext" target="org.xxts.reactor.util.context.Context" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-60.5" />
+      <point x="0.0" y="169.5" />
+    </edge>
+    <edge source="org.xxts.reactor.util.context.ContextN" target="java.util.function.BiConsumer" relationship="REALIZATION">
+      <point x="197.0" y="0.0" />
+      <point x="1493.272209964577" y="3004.773960641228" />
+      <point x="1493.272209964577" y="2701.791353406523" />
+      <point x="1716.6096270337523" y="2701.791353406523" />
+      <point x="0.0" y="37.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Compact" zoom="0.7325771941038455" showDependencies="false" x="1168.2984645249028" y="2269.9544953334575" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Constructors</Category>
+    <Category>Fields</Category>
+    <Category>Inner Classes</Category>
+    <Category>Methods</Category>
+    <Category>Properties</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
