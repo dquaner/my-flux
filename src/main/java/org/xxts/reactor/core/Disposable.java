@@ -83,6 +83,25 @@ public interface Disposable {
     interface Composite extends Disposable {
 
         /**
+         * Atomically mark the container as {@link #isDisposed() disposed}, clear it and then
+         * dispose all the previously contained Disposables. From there on the container cannot
+         * be reused, as {@link #add(Disposable)} and {@link #addAll(Collection)} methods
+         * will immediately return {@literal false}.
+         */
+        @Override
+        void dispose();
+
+        /**
+         * Indicates if the container has already been disposed.
+         * <p>Note that if that is the case, attempts to add new disposable to it via
+         * {@link #add(Disposable)} and {@link #addAll(Collection)} will be rejected.
+         *
+         * @return true if the container has been disposed, false otherwise.
+         */
+        @Override
+        boolean isDisposed();
+
+        /**
          * Add a {@link Disposable} to this container, if it is not {@link #isDisposed() disposed}.
          * Otherwise, d is disposed immediately.
          *
@@ -122,31 +141,16 @@ public interface Disposable {
         }
 
         /**
-         * Atomically mark the container as {@link #isDisposed() disposed}, clear it and then
-         * dispose all the previously contained Disposables. From there on the container cannot
-         * be reused, as {@link #add(Disposable)} and {@link #addAll(Collection)} methods
-         * will immediately return {@literal false}.
-         */
-        @Override
-        void dispose();
-
-        /**
-         * Indicates if the container has already been disposed.
-         * <p>Note that if that is the case, attempts to add new disposable to it via
-         * {@link #add(Disposable)} and {@link #addAll(Collection)} will be rejected.
-         *
-         * @return true if the container has been disposed, false otherwise.
-         */
-        @Override
-        boolean isDisposed();
-
-        /**
          * Delete the {@link Disposable} from this container, without disposing it.
          * <p>
          * It becomes the responsibility of the caller to dispose the value themselves,
          * which they can do by a simple call to {@link Disposable#dispose()} on said
          * value (probably guarded by a check that this method returned true, meaning the
          * disposable was actually in the container).
+         * <p>
+         *     它把处理值的责任交给了调用者，可以通过对所述值的简单调用 {@link Disposable#dispose()} 来完成
+         *     （可能通过检查该方法是否返回 true 来保证，返回 true 意味着可处理的值实际上在容器中）。
+         * </p>
          *
          * @param d the {@link Disposable} to remove.
          * @return true if the disposable was successfully deleted, false otherwise.

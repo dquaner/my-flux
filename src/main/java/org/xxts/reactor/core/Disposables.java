@@ -210,6 +210,9 @@ public final class Disposables {
             return r == null ? 0 : r.size();
         }
 
+        /**
+         * Return a {@link Stream} of Disposables in this CompositeDisposable.
+         */
         Stream<Disposable> asStream() {
             List<Disposable> r = resources;
             return r == null ? Stream.empty() : r.stream();
@@ -275,9 +278,6 @@ public final class Disposables {
 
     /**
      * Not public API. Implementation of a {@link Disposable.Swap}.
-     *
-     * @author Simon Baslé
-     * @author David Karnok
      */
     static final class SwapDisposable implements Disposable.Swap {
 

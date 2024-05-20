@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>org.xxts.reactor.core.Disposables</OriginalElement>
+  <nodes>
+    <node x="1429.5" y="-34.5">org.xxts.reactor.core.Scannable</node>
+    <node x="822.5" y="351.5">org.xxts.reactor.core.Disposables.SwapDisposable</node>
+    <node x="857.0" y="-1.0">org.xxts.reactor.core.Disposable</node>
+    <node x="1516.476273148148" y="368.5">org.xxts.reactor.core.Scannable.Attr</node>
+    <node x="1105.5" y="351.5">org.xxts.reactor.core.Disposables.ListCompositeDisposable</node>
+    <node x="822.5" y="133.5">java.util.function.Supplier</node>
+    <node x="531.0" y="290.5">org.xxts.reactor.core.Disposables.NeverDisposable</node>
+    <node x="525.0" y="558.5">org.xxts.reactor.core.Disposables.SimpleDisposable</node>
+    <node x="1105.5" y="133.5">org.xxts.reactor.core.Disposable.Composite</node>
+    <node x="554.523726851852" y="692.5">org.xxts.reactor.core.Disposables</node>
+    <node x="822.5" y="230.5">org.xxts.reactor.core.Disposable.Swap</node>
+    <node x="1516.476273148148" y="582.5">org.xxts.reactor.core.Scannable.Attr.RunStyle</node>
+    <node x="521.0" y="424.5">org.xxts.reactor.core.Disposables.AlwaysDisposable</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="org.xxts.reactor.core.Disposables.SwapDisposable" target="org.xxts.reactor.core.Disposable" relationship="TO_ONE">
+      <point x="117.0" y="0.0" />
+      <point x="788.0" y="444.0" />
+      <point x="788.0" y="81.0" />
+      <point x="65.5" y="38.0" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposables.ListCompositeDisposable" target="org.xxts.reactor.core.Disposable.Composite" relationship="REALIZATION">
+      <point x="1.5" y="-195.5" />
+      <point x="1283.0" y="310.0" />
+      <point x="28.5" y="84.5" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposables.AlwaysDisposable" target="org.xxts.reactor.core.Disposable" relationship="REALIZATION">
+      <point x="-95.0" y="-41.0" />
+      <point x="503.0" y="440.0" />
+      <point x="503.0" y="59.0" />
+      <point x="-70.5" y="16.0" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposables.NeverDisposable" target="org.xxts.reactor.core.Disposable" relationship="REALIZATION">
+      <point x="-90.0" y="-42.0" />
+      <point x="503.0" y="305.0" />
+      <point x="503.0" y="59.0" />
+      <point x="-75.5" y="16.0" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposables.ListCompositeDisposable" target="org.xxts.reactor.core.Disposable" relationship="TO_MANY">
+      <point x="120.5" y="-188.5" />
+      <point x="1417.0" y="364.0" />
+      <point x="1417.0" y="17.0" />
+      <point x="80.5" y="-26.0" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposable.Composite" target="org.xxts.reactor.core.Disposable" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-92.0" />
+      <point x="1255.5" y="117.0" />
+      <point x="1003.0" y="117.0" />
+      <point x="67.0" y="42.0" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposables.SimpleDisposable" target="org.xxts.reactor.core.Disposable" relationship="REALIZATION">
+      <point x="-93.0" y="-43.0" />
+      <point x="503.0" y="572.0" />
+      <point x="503.0" y="59.0" />
+      <point x="-68.5" y="16.0" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposables" target="org.xxts.reactor.core.Disposables.NeverDisposable" relationship="CREATE">
+      <point x="-117.0" y="-152.0" />
+      <point x="450.5" y="707.0" />
+      <point x="450.5" y="336.0" />
+      <point x="-48.0" y="-11.0" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposable.Swap" target="org.xxts.reactor.core.Disposable" relationship="INTERFACE_GENERALIZATION">
+      <point x="63.5" y="-37.0" />
+      <point x="67.0" y="38.0" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposables" target="org.xxts.reactor.core.Disposable" relationship="TO_ONE">
+      <point x="-237.52372685185196" y="-1.0" />
+      <point x="427.0" y="858.0" />
+      <point x="427.0" y="18.0" />
+      <point x="-76.0" y="-25.0" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposables" target="org.xxts.reactor.core.Disposables.ListCompositeDisposable" relationship="CREATE">
+      <point x="241.5" y="-125.0" />
+      <point x="1105.75" y="734.0" />
+      <point x="1105.75" y="734.0" />
+      <point x="-161.5" y="181.5" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposables.ListCompositeDisposable" target="org.xxts.reactor.core.Disposables" relationship="INNER_CLASS">
+      <point x="-153.5" y="108.5" />
+      <point x="1128.0" y="661.0" />
+      <point x="800.523726851852" y="661.0" />
+      <point x="0.0" y="-166.5" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposables.NeverDisposable" target="org.xxts.reactor.core.Disposables" relationship="INNER_CLASS">
+      <point x="92.0" y="0.0" />
+      <point x="769.0" y="347.0" />
+      <point x="769.0" y="660.5" />
+      <point x="800.523726851852" y="660.5" />
+      <point x="0.0" y="-166.5" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposables" target="org.xxts.reactor.core.Disposables.SimpleDisposable" relationship="CREATE">
+      <point x="-210.0" y="-152.0" />
+      <point x="450.5" y="707.0" />
+      <point x="450.5" y="604.0" />
+      <point x="-4.0" y="-11.0" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposables.SwapDisposable" target="org.xxts.reactor.core.Disposable.Swap" relationship="REALIZATION">
+      <point x="-15.0" y="-92.5" />
+      <point x="-15.0" y="43.5" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposables.AlwaysDisposable" target="org.xxts.reactor.core.Disposables" relationship="INNER_CLASS">
+      <point x="97.0" y="0.0" />
+      <point x="769.0" y="481.0" />
+      <point x="769.0" y="660.0" />
+      <point x="800.523726851852" y="660.0" />
+      <point x="0.0" y="-166.5" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposables.SwapDisposable" target="org.xxts.reactor.core.Disposables" relationship="INNER_CLASS">
+      <point x="-93.5" y="58.0" />
+      <point x="846.0" y="661.0" />
+      <point x="800.523726851852" y="661.0" />
+      <point x="0.0" y="-166.5" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Scannable.Attr.RunStyle" target="org.xxts.reactor.core.Scannable.Attr" relationship="INNER_CLASS">
+      <point x="0.0" y="-56.0" />
+      <point x="-105.0" y="92.5" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposables" target="org.xxts.reactor.core.Disposables.SwapDisposable" relationship="CREATE">
+      <point x="116.5" y="-166.5" />
+      <point x="917.023726851852" y="530.0" />
+      <point x="-23.5" y="86.0" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposable.Swap" target="java.util.function.Supplier" relationship="INTERFACE_GENERALIZATION">
+      <point x="-43.0" y="-43.5" />
+      <point x="0.0" y="31.5" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposables" target="org.xxts.reactor.core.Disposables.AlwaysDisposable" relationship="CREATE">
+      <point x="-97.0" y="-153.0" />
+      <point x="450.5" y="706.0" />
+      <point x="450.5" y="470.0" />
+      <point x="-68.0" y="-11.0" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposable.Composite" target="org.xxts.reactor.core.Disposable" relationship="INNER_CLASS">
+      <point x="-150.0" y="-24.5" />
+      <point x="986.0" y="201.0" />
+      <point x="986.0" y="63.0" />
+      <point x="51.0" y="20.0" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposables.ListCompositeDisposable" target="org.xxts.reactor.core.Scannable" relationship="REALIZATION">
+      <point x="162.5" y="-201.5" />
+      <point x="1444.0" y="302.5" />
+      <point x="1445.0" y="302.5" />
+      <point x="-132.5" y="112.5" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposable.Swap" target="org.xxts.reactor.core.Disposable" relationship="INNER_CLASS">
+      <point x="46.5" y="-31.0" />
+      <point x="986.0" y="243.0" />
+      <point x="986.0" y="77.0" />
+      <point x="50.0" y="34.0" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Scannable.Attr" target="org.xxts.reactor.core.Scannable" relationship="TO_ONE">
+      <point x="-143.97627314814804" y="-92.5" />
+      <point x="0.0" y="176.0" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Disposables.SimpleDisposable" target="org.xxts.reactor.core.Disposables" relationship="INNER_CLASS">
+      <point x="77.0" y="7.0" />
+      <point x="697.0" y="620.0" />
+      <point x="769.0" y="620.0" />
+      <point x="769.0" y="660.5" />
+      <point x="800.523726851852" y="660.5" />
+      <point x="0.0" y="-166.5" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Scannable.Attr" target="org.xxts.reactor.core.Scannable" relationship="INNER_CLASS">
+      <point x="-3.4762731481480387" y="-92.5" />
+      <point x="140.5" y="176.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="1.0" showDependencies="true" x="1237.5" y="560.0" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Constructors</Category>
+    <Category>Fields</Category>
+    <Category>Inner Classes</Category>
+    <Category>Methods</Category>
+    <Category>Properties</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

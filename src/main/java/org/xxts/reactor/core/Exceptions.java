@@ -1,22 +1,23 @@
 package org.xxts.reactor.core;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
-import java.util.function.Consumer;
-
+import org.xxts.reactivestreams.Publisher;
+import org.xxts.reactivestreams.Subscriber;
 import org.xxts.reactor.core.publisher.Flux;
 import org.xxts.reactor.util.Logger;
 import org.xxts.reactor.util.Loggers;
 import org.xxts.reactor.util.annotation.Nullable;
 import org.xxts.reactor.util.retry.Retry;
 
+import java.io.Serial;
+import java.util.*;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.function.Consumer;
+
 /**
  * Global Reactor Core Exception handling and utils to operate on.
+ *
+ * @see <a href="https://github.com/reactor/reactive-streams-commons">Reactive-Streams-Commons</a>
  */
 public abstract class Exceptions {
 
@@ -25,15 +26,19 @@ public abstract class Exceptions {
 	/**
 	 * A common error message used when a reactive streams source doesn't seem to respect
 	 * backpressure signals, resulting in an operator's internal queue to be full.
-	 * <br> 当 reactive streams source 似乎不尊重反压信号，导致操作符的内部队列满时，使用的常见错误消息。
+	 * <p>
+	 *     常见错误消息，当 reactive streams source 似乎不尊重反压信号，导致 operator 的内部队列满时使用。
+	 * </p>
 	 */
-	public static final String BACKPRESSURE_ERROR_QUEUE_FULL = "Queue is full: Reactive Streams source doesn't respect backpressure";
+	public static final String BACKPRESSURE_ERROR_QUEUE_FULL =
+			"Queue is full: Reactive Streams source doesn't respect backpressure";
 
 	/**
 	 * A singleton instance of a Throwable indicating a terminal state for exceptions,
 	 * don't leak this!
-	 * <br>
-	 * 一个 Throwable 的单例实例，指示异常的结束状态，不要泄漏它！
+	 * <p>
+	 *     一个 Throwable 的单例实例，指示异常的结束状态。Don't leak this!
+	 * </p>
 	 */
 	@SuppressWarnings("ThrowableInstanceNeverThrown")
 	public static final Throwable TERMINATED = new StaticThrowable("Operator has been terminated");
@@ -88,9 +93,9 @@ public abstract class Exceptions {
 	}
 
 	/**
-	 * Wrap a {@link Throwable} delivered via {@link org.reactivestreams.Subscriber#onError(Throwable)}
-	 * from an upstream {@link org.reactivestreams.Publisher} that itself
-	 * emits {@link org.reactivestreams.Publisher}s to distinguish the error signal from
+	 * Wrap a {@link Throwable} delivered via {@link Subscriber#onError(Throwable)}
+	 * from an upstream {@link Publisher} that itself
+	 * emits {@link Publisher}s to distinguish the error signal from
 	 * the inner sequence's processing errors.
 	 * @param throwable the source sequence {@code error} signal
 	 * @return {@link SourceException}
@@ -130,8 +135,8 @@ public abstract class Exceptions {
 	}
 
 	/**
-	 * Create a composite exception that wraps the given {@link Throwable Throwable(s)},
-	 * as suppressed exceptions. Instances created by this method can be detected using the
+	 * Create a composite(合成的) exception that wraps the given {@link Throwable Throwable(s)},
+	 * as suppressed(被封锁的) exceptions. Instances created by this method can be detected using the
 	 * {@link #isMultiple(Throwable)} check. The {@link #unwrapMultiple(Throwable)} method
 	 * will correctly unwrap these to a {@link List} of the suppressed exceptions. Note
 	 * that is will also be consistent in producing a List for other types of exceptions
@@ -321,7 +326,7 @@ public abstract class Exceptions {
 	/**
 	 * Check if the given error is a {@link #errorCallbackNotImplemented(Throwable) callback not implemented}
 	 * exception, in which case its {@link Throwable#getCause() cause} will be the propagated
-	 * error that couldn't be processed.
+	 * error that couldn't be processed(无法处理的传播错误).
 	 *
 	 * @param t the {@link Throwable} error to check
 	 * @return true if given {@link Throwable} is a callback not implemented exception.
@@ -368,7 +373,7 @@ public abstract class Exceptions {
 	/**
 	 * @param elements the invalid requested demand
 	 *
-	 * @return a new {@link IllegalArgumentException} with a cause message abiding to
+	 * @return a new {@link IllegalArgumentException} with a cause message abiding to (依据)
 	 * reactive stream specification rule 3.9.
 	 */
 	public static IllegalArgumentException nullOrNegativeRequestException(long elements) {
@@ -378,7 +383,7 @@ public abstract class Exceptions {
 
 	/**
 	 * Prepare an unchecked {@link RuntimeException} that should be propagated
-	 * downstream through {@link org.reactivestreams.Subscriber#onError(Throwable)}.
+	 * downstream through {@link Subscriber#onError(Throwable)}.
 	 * <p>This method invokes {@link #throwIfFatal(Throwable)}.
 	 *
 	 * @param t the root cause
@@ -426,6 +431,10 @@ public abstract class Exceptions {
 	 * Unless wrapped explicitly, such exceptions would always be thrown by operators instead of
 	 * propagation through onError, potentially interrupting progress of Flux/Mono sequences.
 	 * When they occur, the JVM itself is assumed to be in an unrecoverable state, and so is Reactor.
+	 * <p>
+	 *     除非显式包装，否则这些异常总是由操作符抛出，而不是通过 onError 传播，这可能会中断 Flux/Mono 序列的进程。
+	 *     当它们发生时，认为 JVM 和 Reactor 都处于不可恢复状态。
+	 * </p>
 	 *
 	 * @see #throwIfFatal(Throwable)
 	 * @see #throwIfJvmFatal(Throwable)
@@ -458,6 +467,10 @@ public abstract class Exceptions {
 	 * propagation through onError, potentially interrupting progress of Flux/Mono sequences.
 	 * When they occur, the assumption is that Reactor is in an unrecoverable state (notably
 	 * because the JVM itself might be in an unrecoverable state).
+	 * <p>
+	 *     除非显式包装，否则这些异常总是由操作符抛出，而不是通过 onError 传播，这可能会中断 Flux/Mono 序列的进程。
+	 *     当它们发生时，假设反应器处于不可恢复状态（因为 JVM 本身可能处于不可恢复状态）。
+	 * </p>
 	 *
 	 * @see #throwIfFatal(Throwable)
 	 * @see #isJvmFatal(Throwable)
@@ -470,17 +483,22 @@ public abstract class Exceptions {
 
 	/**
 	 * Internal intermediate test that only detect Fatal but not Jvm Fatal exceptions.
+	 * <p>
+	 *     内部中间测试，只检测致命异常，而不检测 Jvm 致命异常。
+	 * </p>
 	 */
 	static boolean isFatalButNotJvmFatal(@Nullable Throwable t) {
 		return t instanceof BubblingException || t instanceof ErrorCallbackNotImplemented;
 	}
 
 	/**
-	 * Throws a particular {@code Throwable} only if it belongs to a set of "fatal" error
+	 * Throws a particular {@code Throwable} only if it belongs to a set of "fatal(致命的)" error
 	 * varieties. These varieties are as follows: <ul>
 	 *     <li>{@code BubblingException} (as detectable by {@link #isBubbling(Throwable)})</li>
 	 *     <li>{@code ErrorCallbackNotImplemented} (as detectable by {@link #isErrorCallbackNotImplemented(Throwable)})</li>
-	 *     <li>{@link VirtualMachineError}</li> <li>{@link ThreadDeath}</li> <li>{@link LinkageError}</li> </ul>
+	 *     <li>{@link VirtualMachineError}</li>
+	 *     <li>{@link ThreadDeath}</li>
+	 *     <li>{@link LinkageError}</li> </ul>
 	 *
 	 * @param t the exception to evaluate
 	 */
@@ -500,7 +518,7 @@ public abstract class Exceptions {
 
 	/**
 	 * Throws a particular {@code Throwable} only if it belongs to a set of "fatal" error
-	 * varieties native to the JVM. These varieties are as follows:
+	 * varieties native(原生的) to the JVM. These varieties are as follows:
 	 * <ul> <li>{@link VirtualMachineError}</li> <li>{@link ThreadDeath}</li>
 	 * <li>{@link LinkageError}</li> </ul>
 	 *
@@ -678,30 +696,11 @@ public abstract class Exceptions {
 	static final RejectedExecutionException NOT_TIME_CAPABLE_REJECTED_EXECUTION =
 			new StaticRejectedExecutionException("Scheduler is not capable of time-based scheduling");
 
-	static class CompositeException extends ReactiveException {
-
-		CompositeException() {
-			super("Multiple exceptions");
-		}
-
-		private static final long serialVersionUID = 8070744939537687606L;
-	}
-
-	static class BubblingException extends ReactiveException {
-
-		BubblingException(String message) {
-			super(message);
-		}
-
-		BubblingException(Throwable cause) {
-			super(cause);
-		}
-
-		private static final long serialVersionUID = 2491425277432776142L;
-	}
-
 	/**
-	 * An exception that is propagated downward through {@link org.reactivestreams.Subscriber#onError(Throwable)}
+	 * An exception that is propagated downward through {@link Subscriber#onError(Throwable)}
+	 * <p>
+	 *     通过 {@link Subscriber#onError(Throwable)} 向下传播的异常
+	 * </p>
 	 */
 	static class ReactiveException extends RuntimeException {
 
@@ -719,16 +718,49 @@ public abstract class Exceptions {
 					super.fillInStackTrace();
 		}
 
+		@Serial
 		private static final long serialVersionUID = 2491425227432776143L;
 	}
 
 	/**
+	 * Multiple ReactiveExceptions.
+	 */
+	static class CompositeException extends ReactiveException {
+
+		CompositeException() {
+			super("Multiple exceptions");
+		}
+
+		@Serial
+		private static final long serialVersionUID = 8070744939537687606L;
+	}
+
+	static class BubblingException extends ReactiveException {
+
+		BubblingException(String message) {
+			super(message);
+		}
+
+		BubblingException(Throwable cause) {
+			super(cause);
+		}
+
+		@Serial
+		private static final long serialVersionUID = 2491425277432776142L;
+	}
+
+	/**
 	 * A {@link Throwable} that wraps the actual {@code cause} delivered via
-	 * {@link org.reactivestreams.Subscriber#onError(Throwable)} in case of
-	 * {@link org.reactivestreams.Publisher}s that themselves emit items of type
-	 * {@link org.reactivestreams.Publisher}. This wrapper is used to distinguish
+	 * {@link Subscriber#onError(Throwable)} in case of
+	 * {@link Publisher}s that themselves emit items of type
+	 * {@link Publisher}. This wrapper is used to distinguish
 	 * {@code error}s delivered by the upstream sequence from the ones that happen via
 	 * the inner sequence processing chain.
+	 * <p>
+	 *     在 {@link Publisher}s 发出类型为 {@link Publisher} 时，
+	 *     使用该 {@link Throwable} 封装通过 {@link Subscriber#onError(Throwable)} 传递的实际  {@code cause}。
+	 *     该包装器用于区分上游序列传递的 {@code error}s 和内部序列处理链发生的  {@code error}s。
+	 * </p>
 	 */
 	public static class SourceException extends ReactiveException {
 
@@ -736,6 +768,7 @@ public abstract class Exceptions {
 			super(cause);
 		}
 
+		@Serial
 		private static final long serialVersionUID = 5747581575202629465L;
 	}
 
@@ -750,14 +783,16 @@ public abstract class Exceptions {
 			return this;
 		}
 
+		@Serial
 		private static final long serialVersionUID = 2491425227432776143L;
 	}
 
 	/**
 	 * An error signal from downstream subscribers consuming data when their state is
 	 * denying any additional event.
-	 *
-	 * @author Stephane Maldini
+	 * <p>
+	 *     An error signal from downstream subscribers，一个状态为拒绝任何附加事件的下游订阅者消费了数据。
+	 * </p>
 	 */
 	static final class CancelException extends BubblingException {
 
@@ -765,6 +800,7 @@ public abstract class Exceptions {
 			super("The subscriber has denied dispatching");
 		}
 
+		@Serial
 		private static final long serialVersionUID = 2491425227432776144L;
 
 	}
@@ -777,8 +813,8 @@ public abstract class Exceptions {
 	}
 
 	/**
-	 * A specialized {@link IllegalStateException} to signify a {@link Flux#retryWhen(Retry) retry}
-	 * has failed (eg. after N attempts, or a timeout).
+	 * A specialized {@link IllegalStateException} to signify a {@link Flux#retryWhen(Retry)}  retry}
+	 * has failed (e.g. after N attempts, or a timeout).
 	 *
 	 * @see #retryExhausted(String, Throwable)
 	 * @see #isRetryExhausted(Throwable)
@@ -849,6 +885,10 @@ public abstract class Exceptions {
 	/**
 	 * A general-purpose {@link Consumer} that closes {@link AutoCloseable} resource.
 	 * If exception is thrown during closing the resource, it will be propagated by {@link Exceptions#propagate(Throwable)}.
+	 * <p>
+	 *     用于关闭 {@link AutoCloseable} 资源的通用 {@link Consumer}。
+	 *     如果在关闭资源期间抛出异常，异常将通过 {@link Exceptions#propagate(Throwable)} 传播。
+	 * </p>
 	 */
 	public static final Consumer<? super AutoCloseable> AUTO_CLOSE = resource -> {
 		try {

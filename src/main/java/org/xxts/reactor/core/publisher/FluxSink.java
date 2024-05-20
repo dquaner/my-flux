@@ -14,7 +14,7 @@ import java.util.function.LongConsumer;
  * Wrapper API around a downstream Subscriber for emitting any number of
  * next signals followed by zero or one onError/onComplete.
  * <br>
- * 下游订阅者的 Wrapper API，用于发出任意数量的 next 信号，后面跟着 0 或 1 个 onError/onComplete 。
+ * 下游 Subscriber 的 Wrapper API，用于发出任意数量的 next 信号，后面跟着 0 或 1 个 onError/onComplete 信号。
  * <p>
  * @param <T> the value type
  */
@@ -22,9 +22,14 @@ public interface FluxSink<T> {
 
     /**
      * Emit a non-null element, generating an {@link Subscriber#onNext(Object) onNext} signal.
+     * <br> 发出一个非空元素，生成一个 {@link Subscriber#onNext(Object) onNext} 信号。
      * <p>
      * Might throw an unchecked exception in case of a fatal error downstream which cannot
      * be propagated to any asynchronous handler (aka a bubbling exception).
+     * <br> 可能在下游发生致命错误时抛出未检查异常，该错误无法传播到任何异步处理程序（也称为冒泡异常）。
+     *
+     * @see Subscriber#onNext(Object)
+     * @see org.xxts.reactor.core.Exceptions#throwIfFatal(Throwable)
      *
      * @param t the value to emit, not null
      * @return this sink for chaining further signals
@@ -34,6 +39,7 @@ public interface FluxSink<T> {
     /**
      * Terminate the sequence successfully, generating an {@link Subscriber#onComplete() onComplete}
      * signal.
+     * <br> 成功终止序列，生成一个 {@link Subscriber#onComplete() onComplete} 信号。
      *
      * @see Subscriber#onComplete()
      */
@@ -42,6 +48,7 @@ public interface FluxSink<T> {
     /**
      * Fail the sequence, generating an {@link Subscriber#onError(Throwable) onError}
      * signal.
+     * <br> 失败序列，生成一个 {@link Subscriber#onError(Throwable)} 信号。
      *
      * @param e the exception to signal, not null
      * @see Subscriber#onError(Throwable)
@@ -49,28 +56,17 @@ public interface FluxSink<T> {
     void error(Throwable e);
 
     /**
-     * Return the current subscriber {@link Context}.
-     * <p>
-     * {@link Context} can be enriched via {@link Flux#contextWrite(Function)}
-     * operator or directly by a child subscriber overriding {@link CoreSubscriber#currentContext()}
-     *
-     * @deprecated To be removed in 3.6.0 at the earliest. Prefer using #contextView() instead.
-     */
-    @Deprecated
-    Context currentContext();
-
-    /**
      * Return the current subscriber's context as a {@link ContextView} for inspection.
+     * <br> 将当前订阅者的上下文作为 {@link ContextView} 返回以供检查。
      * <p>
      * {@link Context} can be enriched downstream via {@link Flux#contextWrite(Function)}
      * operator or directly by a child subscriber overriding {@link CoreSubscriber#currentContext()}.
+     * <br> {@link Context} 可以在下游通过 {@link Flux#contextWrite(Function)} 操作符或
+     * 直接通过重写了 {@link CoreSubscriber#currentContext()} 的子订阅者来更新。
      *
      * @return the current subscriber {@link ContextView}.
      */
-    default ContextView contextView() {
-        return currentContext();
-    }
-
+    ContextView contextView();
 
     /**
      * The current outstanding request amount.
@@ -82,6 +78,8 @@ public interface FluxSink<T> {
 
     /**
      * Returns true if the downstream cancelled the sequence.
+     * <br> 如果下游取消了该序列，则返回 true。
+     *
      * @return true if the downstream cancelled the sequence
      */
     boolean isCancelled();
@@ -109,20 +107,20 @@ public interface FluxSink<T> {
      * is invoked.
      *
      * <p>
-     * 将一个 {@link LongConsumer} 附加到当前 {@link FluxSink}，当有任何请求到当前 sink 时，这个 LongConsumer 将被通知。
+     * 将一个 {@link LongConsumer} 附加到当前 {@link FluxSink}，当有任何请求到当前 sink 时，这个 {@link LongConsumer} 将被通知。
      * <p>
-     * For push/pull sinks：
+     * For push/pull sinks：<br>
      * （使用 {@link Flux#create(java.util.function.Consumer)} 或 {@link Flux#create(java.util.function.Consumer, FluxSink.OverflowStrategy)} 创建）
-     *      每个请求都会调用这个 consumer 来启用 hybrid backpressure-enabled push/pull 模型。
+     *      <br>每个请求都会调用这个 consumer 来启用 hybrid backpressure-enabled push/pull 模型。
      * <p>
      *      <strong>注意：</strong>
      *      如果此方法同时发生了多次 {@link Subscription#request}，第一个 consumer 调用可能会处理累积的需求，而不是被多次调用。
      * <p>
      *      当与基于异步监听器的 API 进行桥接时，该 {@code onRequest} 回调可用于在需要时从源请求更多的数据，并通过将数据传递给 sink 来管理背压（仅当请求被挂起时）。
      * <p>
-     * For push-only sinks：
+     * For push-only sinks：<br>
      * （使用 {@link Flux#push(java.util.function.Consumer)} 或 {@link Flux#push(java.util.function.Consumer, FluxSink.OverflowStrategy)} 创建）
-     *      当该方法被调用时，有一个初始的 {@code Long.MAX_VALUE} 请求来调用这个 consumer。
+     *      <br>当该方法被调用时，有一个初始的 {@code Long.MAX_VALUE} 请求来调用这个 consumer。
      *
      * @param consumer the consumer to invoke on each request
      * @return {@link FluxSink} with a consumer that is notified of requests

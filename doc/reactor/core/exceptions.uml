@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>org.xxts.reactor.core.Exceptions</OriginalElement>
+  <nodes>
+    <node x="1085.5540776958437" y="1.0000000000004547">org.xxts.reactor.core.Exceptions.BubblingException</node>
+    <node x="1086.0540762956425" y="181.00000000000023">org.xxts.reactor.core.Exceptions.SourceException</node>
+    <node x="198.55407644954448" y="54.999999999999886">org.xxts.reactor.core.Exceptions</node>
+    <node x="778.5540770726941" y="598.0000000000001">org.xxts.reactor.core.Exceptions.ReactorRejectedExecutionException</node>
+    <node x="778.5540770726941" y="847.9999999999999">org.xxts.reactor.core.Exceptions.StaticThrowable</node>
+    <node x="1085.5540776958437" y="104.00000000000034">org.xxts.reactor.core.Exceptions.CompositeException</node>
+    <node x="778.5540770726941" y="485.5000000000002">org.xxts.reactor.core.Exceptions.RetryExhaustedException</node>
+    <node x="1362.5540783189933" y="14.000000000000455">org.xxts.reactor.core.Exceptions.CancelException</node>
+    <node x="778.5540770726941" y="281.50000000000045">org.xxts.reactor.core.Exceptions.ErrorCallbackNotImplemented</node>
+    <node x="778.5540770726941" y="710.5">org.xxts.reactor.core.Exceptions.StaticRejectedExecutionException</node>
+    <node x="778.5540770726941" y="395.00000000000034">org.xxts.reactor.core.Exceptions.OverflowException</node>
+    <node x="778.5540770726941" y="73.50000000000023">org.xxts.reactor.core.Exceptions.ReactiveException</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="org.xxts.reactor.core.Exceptions.OverflowException" target="org.xxts.reactor.core.Exceptions" relationship="INNER_CLASS">
+      <point x="-108.50007707269413" y="-3.410605131648481E-13" />
+      <point x="747.0" y="427.5" />
+      <point x="747.0" y="508.0" />
+      <point x="257.9999235504555" y="1.1368683772161603E-13" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Exceptions.CompositeException" target="org.xxts.reactor.core.Exceptions.ReactiveException" relationship="GENERALIZATION">
+      <point x="-106.50007769584363" y="-3.410605131648481E-13" />
+      <point x="1054.0" y="135.5" />
+      <point x="1054.0" y="129.5" />
+      <point x="121.49992292730587" y="-2.2737367544323206E-13" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Exceptions.SourceException" target="org.xxts.reactor.core.Exceptions" relationship="INNER_CLASS">
+      <point x="118.44592370435748" y="-17.500000000000227" />
+      <point x="1347.054" y="196.0" />
+      <point x="1347.054" y="269.5" />
+      <point x="747.0" y="269.5" />
+      <point x="747.0" y="508.0" />
+      <point x="257.9999235504555" y="1.1368683772161603E-13" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Exceptions.ErrorCallbackNotImplemented" target="org.xxts.reactor.core.Exceptions" relationship="INNER_CLASS">
+      <point x="-157.00007707269413" y="-4.547473508864641E-13" />
+      <point x="747.0" y="325.5" />
+      <point x="747.0" y="508.0" />
+      <point x="257.9999235504555" y="1.1368683772161603E-13" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Exceptions.ReactiveException" target="org.xxts.reactor.core.Exceptions" relationship="INNER_CLASS">
+      <point x="-121.50007707269413" y="-2.2737367544323206E-13" />
+      <point x="747.0" y="129.5" />
+      <point x="747.0" y="508.0" />
+      <point x="257.9999235504555" y="1.1368683772161603E-13" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Exceptions.ReactorRejectedExecutionException" target="org.xxts.reactor.core.Exceptions" relationship="INNER_CLASS">
+      <point x="-197.50007707269413" y="-1.1368683772161603E-13" />
+      <point x="747.0" y="641.5" />
+      <point x="747.0" y="508.0" />
+      <point x="257.9999235504555" y="1.1368683772161603E-13" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Exceptions.CancelException" target="org.xxts.reactor.core.Exceptions" relationship="INNER_CLASS">
+      <point x="-7.729676894996373E-5" y="31.499999999999545" />
+      <point x="1453.5540010222244" y="210.0" />
+      <point x="1347.054" y="210.0" />
+      <point x="1347.054" y="269.5" />
+      <point x="747.0" y="269.5" />
+      <point x="747.0" y="508.0" />
+      <point x="257.9999235504555" y="1.1368683772161603E-13" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Exceptions.RetryExhaustedException" target="org.xxts.reactor.core.Exceptions" relationship="INNER_CLASS">
+      <point x="-165.00007707269413" y="-2.2737367544323206E-13" />
+      <point x="747.0" y="529.0" />
+      <point x="747.0" y="508.0" />
+      <point x="257.9999235504555" y="1.1368683772161603E-13" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Exceptions.StaticThrowable" target="org.xxts.reactor.core.Exceptions" relationship="INNER_CLASS">
+      <point x="-137.00007707269413" y="1.1368683772161603E-13" />
+      <point x="747.0" y="904.5" />
+      <point x="747.0" y="508.0" />
+      <point x="257.9999235504555" y="1.1368683772161603E-13" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Exceptions.StaticRejectedExecutionException" target="org.xxts.reactor.core.Exceptions" relationship="INNER_CLASS">
+      <point x="-191.50007707269413" y="0.0" />
+      <point x="747.0" y="766.5" />
+      <point x="747.0" y="508.0" />
+      <point x="257.9999235504555" y="1.1368683772161603E-13" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Exceptions.SourceException" target="org.xxts.reactor.core.Exceptions.ReactiveException" relationship="GENERALIZATION">
+      <point x="-116.50007629564243" y="-2.2737367544323206E-13" />
+      <point x="1054.0" y="213.5" />
+      <point x="1054.0" y="129.5" />
+      <point x="121.49992292730587" y="-2.2737367544323206E-13" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Exceptions.BubblingException" target="org.xxts.reactor.core.Exceptions.ReactiveException" relationship="GENERALIZATION">
+      <point x="-122.00007769584363" y="14.999999999999545" />
+      <point x="1054.0" y="60.5" />
+      <point x="1054.0" y="129.5" />
+      <point x="121.49992292730587" y="-2.2737367544323206E-13" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Exceptions.CompositeException" target="org.xxts.reactor.core.Exceptions" relationship="INNER_CLASS">
+      <point x="106.49992230415637" y="-3.410605131648481E-13" />
+      <point x="1347.054" y="135.5" />
+      <point x="1347.054" y="269.5" />
+      <point x="747.0" y="269.5" />
+      <point x="747.0" y="508.0" />
+      <point x="257.9999235504555" y="1.1368683772161603E-13" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Exceptions.CancelException" target="org.xxts.reactor.core.Exceptions.BubblingException" relationship="GENERALIZATION">
+      <point x="-91.0" y="0.0" />
+      <point x="122.0" y="0.0" />
+    </edge>
+    <edge source="org.xxts.reactor.core.Exceptions.BubblingException" target="org.xxts.reactor.core.Exceptions" relationship="INNER_CLASS">
+      <point x="-122.00007769584363" y="-4.547473508864641E-13" />
+      <point x="747.0" y="45.5" />
+      <point x="747.0" y="508.0" />
+      <point x="257.9999235504555" y="1.1368683772161603E-13" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="1.0" showDependencies="false" x="948.5" y="628.0" />
+  <SelectedNodes>
+    <node>org.xxts.reactor.core.Exceptions</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Constructors</Category>
+    <Category>Fields</Category>
+    <Category>Inner Classes</Category>
+    <Category>Methods</Category>
+    <Category>Properties</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

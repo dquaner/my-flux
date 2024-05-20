@@ -2,6 +2,7 @@ package org.xxts.reactor.core;
 
 import org.xxts.reactivestreams.Subscriber;
 import org.xxts.reactivestreams.Subscription;
+import org.xxts.reactor.core.scheduler.Scheduler;
 import org.xxts.reactor.util.annotation.Nullable;
 import org.xxts.reactor.util.function.Tuple2;
 
@@ -44,14 +45,28 @@ import java.util.stream.StreamSupport;
 public interface Scannable {
 
     /**
-     * The pattern for matching words unrelated to operator name.
-     * Used to strip an operator name of various prefixes and suffixes.
+     * This method is used internally by components to define their key-value mappings
+     * in a single place. Although it is ignoring the generic type of the {@link Attr} key,
+     * implementors should take care to return values of the correct type, and return
+     * {@literal null} if no specific value is available.
      * <p>
-     * 匹配与操作符名称无关的单词。用于去除操作符名称中的各种前缀和后缀。
+     *     在一个组件内部使用此方法来定义它的 key-value mappings in a single place。
+     *     虽然此方法忽略 {@link Attr} key 的泛型，
+     *     但具体实现应该注意返回正确类型的值，以及在指定值不可用时返回 null。
      * </p>
+     * <p>
+     * For public consumption of attributes, prefer using {@link #scan(Attr)}, which will
+     * return a typed value and fall back to the key's default if the component didn't
+     * define any mapping.
+     * <p>
+     *     对于公共使用的属性，推荐使用 {@link #scan(Attr)}，它会返回指定类型的值，并且在组件没有定义 mapping 时返回默认值。
+     * </p>
+     *
+     * @param key a {@link Attr} to resolve for the component.
+     * @return the value associated to the key for that specific component, or null if none.
      */
-    Pattern OPERATOR_NAME_UNRELATED_WORDS_PATTERN =
-            Pattern.compile("Parallel|Flux|Mono|Publisher|Subscriber|Fuseable|Operator|Conditional");
+    @Nullable
+    Object scanUnsafe(Attr key);
 
     /**
      * Base class for {@link Scannable} attributes, which all can define a meaningful
@@ -241,9 +256,21 @@ public interface Scannable {
                 Scannable::from);
 
         /**
-         * An arbitrary name given to the operator component. Defaults to {@literal null}.
+         * An arbitrary(任意) name given to the operator component. Defaults to {@literal null}.
          */
         public static final Attr<String> NAME = new Attr<>(null);
+
+        /**
+         * LIFTER attribute exposes name of the lifter function. It is calculated as {@link Object#toString} of a function passed to the
+         * {@link org.xxts.reactor.core.publisher.Operators#lift} or {@link org.xxts.reactor.core.publisher.Operators#liftPublisher}.
+         * Defaults to {@literal null}.
+         * <p>
+         *     LIFTER 属性暴露 lifter 函数的名字。
+         *     他是传递给 {@link org.xxts.reactor.core.publisher.Operators#lift} 或 {@link org.xxts.reactor.core.publisher.Operators#liftPublisher}
+         *     的函数，并通过 {@link Object#toString} 计算。
+         * </p>
+         */
+        public static final Attr<String> LIFTER = new Attr<>(null);
 
         /**
          * Indicate that for some purposes a {@link Scannable} should be used as additional
@@ -256,8 +283,8 @@ public interface Scannable {
          *     表明出于某些目的，一个 {@link Scannable} 应该被用于链中一个 contiguous {@link Scannable} 的附加信息源。
          * </p>
          * <p>
-         *     例如，{@link Scannable#steps()} 使用这个属性来
-         *     对照 assembly trace 的 stepName 和它的 wrapped operator (the one before it in the assembly chain) 的 stepName。
+         *     例如，{@link Scannable#steps()} 使用这个属性来对照
+         *     assembly(装配，组装) trace 和它的 wrapped operator (the one before it in the assembly chain) 的 stepName。
          * </p>
          */
         public static final Attr<Boolean> ACTUAL_METADATA = new Attr<>(false);
@@ -282,38 +309,6 @@ public interface Scannable {
         public static final Attr<Integer> BUFFERED = new Attr<>(0);
 
         /**
-         * Return an {@link Integer} capacity when no {@link #PREFETCH} is defined or
-         * when an arbitrary maximum limit is applied to the backlog capacity of the
-         * scanned component. {@link Integer#MAX_VALUE} signal unlimited capacity.
-         * <p>
-         * Note: This attribute usually resolves to a constant value.
-         */
-        public static final Attr<Integer> CAPACITY = new Attr<>(0);
-
-        /**
-         * A {@link Boolean} attribute indicating whether a downstream component
-         * has interrupted consuming this scanned component, e.g., a cancelled
-         * subscription. Note that it differs from {@link #TERMINATED} which is
-         * intended for "normal" shutdown cycles.
-         */
-        public static final Attr<Boolean> CANCELLED = new Attr<>(false);
-
-        /**
-         * Delay_Error exposes a {@link Boolean} whether the scanned component
-         * actively supports error delaying if it manages a backlog instead of fast
-         * error-passing which might drop pending backlog.
-         * <p>
-         * Note: This attribute usually resolves to a constant value.
-         */
-        public static final Attr<Boolean> DELAY_ERROR = new Attr<>(false);
-
-        /**
-         * a {@link Throwable} attribute which indicate an error state if the scanned
-         * component keeps track of it.
-         */
-        public static final Attr<Throwable> ERROR = new Attr<>(null);
-
-        /**
          * Similar to {@link Attr#BUFFERED}, but reserved for operators that can hold
          * a backlog of items that can grow beyond {@literal Integer.MAX_VALUE}. These
          * operators will also answer to a {@link Attr#BUFFERED} query up to the point
@@ -321,19 +316,28 @@ public interface Scannable {
          * {@literal Integer.MIN_VALUE}, which serves as a signal that this attribute
          * should be used instead. Defaults to {@literal null}.
          * <p>
+         *     与 {@link Attr#BUFFERED} 相似，但保留给可以保存可能超出 {@literal Integer.MAX_VALUE} 积压项的 operators。
+         *     这些 operators 也将回答 {@link Attr#BUFFERED} 查询，如果它们的缓冲区实际上太大，
+         *     此时它们将返回 {@literal Integer.MIN_VALUE}，它作为应该使用此属性的信号。
+         * </p>
+         * <p>
          * {@code Flux.flatMap}, {@code Flux.filterWhen}
          * and {@code Flux.window} (with overlap) are known to use this attribute.
          */
         public static final Attr<Long> LARGE_BUFFERED = new Attr<>(null);
 
         /**
-         * A key that links a {@link Scannable} to another {@link Scannable} it runs on.
-         * Usually exposes a link between an operator/subscriber and its {@link Worker} or
-         * {@link Scheduler}, provided these are {@link Scannable}. Will return
-         * {@link Attr#UNAVAILABLE_SCAN} if the supporting execution is not Scannable or
-         * {@link Attr#NULL_SCAN} if the operator doesn't define a specific runtime.
+         * Return an {@link Integer} capacity when no {@link #PREFETCH} is defined or
+         * when an arbitrary maximum limit is applied to the backlog capacity of the
+         * scanned component. {@link Integer#MAX_VALUE} signal unlimited capacity.
+         * <p>
+         *     当 未定义 {@link #PREFETCH} 或 对扫描组件的积压容量应用了任意限制 时，返回 {@link Integer} 容量。
+         *     {@link Integer#MAX_VALUE} 意味着无限容量。
+         * </p>
+         * <p>
+         * Note: This attribute usually resolves to a constant value.
          */
-        public static final Attr<Scannable> RUN_ON = new Attr<>(null, Scannable::from);
+        public static final Attr<Integer> CAPACITY = new Attr<>(0);
 
         /**
          * Prefetch is an {@link Integer} attribute defining the rate of processing in a
@@ -342,6 +346,10 @@ public interface Scannable {
          * set. {@link Integer#MAX_VALUE} signal unlimited capacity and therefore
          * unbounded demand.
          * <p>
+         *     Prefetch 是一个 {@link Integer} 属性，它定义了一个组件的处理速率，该组件具有请求和保存积压数据的能力。
+         *     当没有设置 {@link #CAPACITY} 时，它通常表示组件容量。{@link Integer#MAX_VALUE} 表示无限的容量，因此无限的需求。
+         * </p>
+         * <p>
          * Note: This attribute usually resolves to a constant value.
          */
         public static final Attr<Integer> PREFETCH = new Attr<>(0);
@@ -349,17 +357,73 @@ public interface Scannable {
         /**
          * A {@link Long} attribute exposing the current pending demand of a downstream
          * component. Note that {@link Long#MAX_VALUE} indicates an unbounded (push-style)
-         * demand as specified in {@link org.reactivestreams.Subscription#request(long)}.
+         * demand as specified in {@link Subscription#request(long)}.
+         * <p>
+         *     一个 {@link Long} 属性，暴露了下游组件的当前待处理需求。
+         *     注意 {@link Long#MAX_VALUE} 表示在 {@link Subscription#request(long)} 中指定 unbounded (push-style) 需求。
+         * </p>
          */
         public static final Attr<Long> REQUESTED_FROM_DOWNSTREAM = new Attr<>(0L);
+
+        /**
+         * A {@link Boolean} attribute indicating whether a downstream component
+         * has interrupted consuming this scanned component, e.g., a cancelled
+         * subscription. Note that it differs from {@link #TERMINATED} which is
+         * intended for "normal" shutdown cycles.
+         * <p>
+         *     一个  {@link Boolean} 属性，指示下游组件是否中断了对该扫描组件的消费。e.g., a cancelled subscription。
+         *     注意，它与 {@link #TERMINATED} 不同，后者用于“正常”关闭周期。
+         * </p>
+         */
+        public static final Attr<Boolean> CANCELLED = new Attr<>(false);
 
         /**
          * A {@link Boolean} attribute indicating whether an upstream component
          * terminated this scanned component. e.g. a post onComplete/onError subscriber.
          * By opposition to {@link #CANCELLED} which determines if a downstream
          * component interrupted this scanned component.
+         * <p>
+         *     一个 {@link Boolean} 属性，指示上游组件是否终止了被扫描的组件。a post onComplete/onError subscriber。
+         *     与 {@link #CANCELLED} 相反，它确定下游组件是否中断了此扫描的组件。
+         * </p>
          */
         public static final Attr<Boolean> TERMINATED = new Attr<>(false);
+
+        /**
+         * Delay_Error exposes a {@link Boolean} whether the scanned component
+         * actively supports error delaying if it manages a backlog instead of fast
+         * error-passing which might drop pending backlog.
+         * <p>
+         *     Delay_Error 暴露了一个 {@link Boolean}，表示如果被扫描的组件管理一个积压
+         *     而不是快速的错误传递，那么它是否主动支持错误延迟。
+         * </p>
+         * <p>
+         * Note: This attribute usually resolves to a constant value.
+         */
+        public static final Attr<Boolean> DELAY_ERROR = new Attr<>(false);
+
+        /**
+         * a {@link Throwable} attribute which indicate an error state if the scanned
+         * component keeps track of it.
+         * <p>
+         *     一个 {@link Throwable} 属性，指示错误状态。
+         * </p>
+         */
+        public static final Attr<Throwable> ERROR = new Attr<>(null);
+
+        /**
+         * A key that links a {@link Scannable} to another {@link Scannable} it runs on.
+         * Usually exposes a link between an operator/subscriber and its {@link Scheduler.Worker} or
+         * {@link Scheduler}, provided these are {@link Scannable}. Will return
+         * {@link Attr#UNAVAILABLE_SCAN} if the supporting execution is not Scannable or
+         * {@link Attr#NULL_SCAN} if the operator doesn't define a specific runtime.
+         * <p>
+         *     通常公开 operator/subscriber 与其 {@link Scheduler.Worker} 或 {@link Scheduler} 之间的链接，前提是它们都是 {@link Scannable}。
+         *     如果支持的执行不是可扫描的，则返回 {@link Attr#UNAVAILABLE_SCAN}；
+         *     如果操作符没有定义特定的 runtime，则返回 {@link Attr#NULL_SCAN}。
+         * </p>
+         */
+        public static final Attr<Scannable> RUN_ON = new Attr<>(null, Scannable::from);
 
         /**
          * A {@link Stream} of {@link Tuple2} representing key/value pairs for tagged components.
@@ -371,16 +435,13 @@ public interface Scannable {
          * An {@link RunStyle} enum attribute indicating whether an operator continues to operate on the same thread.
          * Each value provides a different degree of guarantee from weakest {@link RunStyle#UNKNOWN} to strongest {@link RunStyle#SYNC}.
          * <p>
+         *     一个 {@link RunStyle} 枚举属性，指示 operator 是否继续在同一线程上操作。
+         *     每个值提供了不同程度的保证，从最弱的 {@link RunStyle#UNKNOWN} 到最强的 {@link RunStyle#SYNC}。
+         * </p>
+         * <p>
          * Defaults to {@link RunStyle#UNKNOWN}.
          */
         public static final Attr<RunStyle> RUN_STYLE = new Attr<>(RunStyle.UNKNOWN);
-
-        /**
-         * LIFTER attribute exposes name of the lifter function. It is calculated as {@link Object#toString} of a function passed to the
-         * {@link reactor.core.publisher.Operators#lift} or {@link reactor.core.publisher.Operators#liftPublisher}.
-         * Defaults to {@literal null}.
-         */
-        public static final Attr<String> LIFTER = new Attr<>(null);
 
         /**
          * An {@link Enum} enumerating the different styles an operator can run :
@@ -416,7 +477,7 @@ public interface Scannable {
         }
 
         /**
-         * 递归
+         * 递归 scan
          */
         static Stream<? extends Scannable> recurse(Scannable _s, Attr<Scannable> key) {
             Scannable s = Scannable.from(_s.scan(key));
@@ -465,6 +526,58 @@ public interface Scannable {
         return Attr.UNAVAILABLE_SCAN;
     }
 
+    /**
+     * Return true whether the component is available for {@link #scan(Attr)} resolution.
+     *
+     * @return true whether the component is available for {@link #scan(Attr)} resolution.
+     */
+    default boolean isScanAvailable() {
+        return true;
+    }
+
+    /**
+     * Introspect a component's specific state {@link Attr attribute}, returning an
+     * associated value specific to that component, or the default value associated with
+     * the key, or null if the attribute doesn't make sense for that particular component
+     * and has no sensible default.
+     * <p>
+     *     检查当前组件的指定 {@link Attr attribute}，返回相关值，或者 key Attr 的默认值。
+     *     如果这个 key Attr 对于当前组件没有意义并且没有合理的默认值，则返回 null。
+     * </p>
+     *
+     * @param key a {@link Attr} to resolve for the component.
+     * @return a value associated to the key or null if unmatched or unresolved
+     */
+    @Nullable
+    default <T> T scan(Attr<T> key) {
+        // note tryConvert will just plain cast most of the time
+        // except e.g. for Attr<Scannable>
+        T value = key.tryConvert(scanUnsafe(key));
+        if (value == null)
+            return key.defaultValue();
+        return value;
+    }
+
+    /**
+     * Introspect a component's specific state {@link Attr attribute}. If there's no
+     * specific value in the component for that key, fall back to returning the
+     * provided non-null default.
+     *
+     * @param key          a {@link Attr} to resolve for the component.
+     * @param defaultValue a fallback value if key resolve to {@literal null}
+     * @return a value associated to the key or the provided default if unmatched or unresolved
+     */
+    default <T> T scanOrDefault(Attr<T> key, T defaultValue) {
+        T v;
+        //note tryConvert will just plain cast most of the time
+        //except e.g. for Attr<Scannable>
+        v = key.tryConvert(scanUnsafe(key));
+
+        if (v == null) {
+            return Objects.requireNonNull(defaultValue, "defaultValue");
+        }
+        return v;
+    }
 
     /**
      * Return a {@link Stream} navigating the {@link Subscriber}
@@ -509,6 +622,10 @@ public interface Scannable {
      * Check this {@link Scannable} and its {@link #parents()} for a user-defined name and
      * return the first one that is reachable, or default to this {@link Scannable}
      * {@link #stepName()} if none.
+     * <p>
+     * 检查当前 {@link Scannable} 及其 {@link #parents()} 是否有用户定义的 {@link Attr#NAME}，并返回第一个可访问的名称，
+     * 如果没有，则默认为当前 {@link Scannable} 的 {@link #stepName()}。
+     * </p>
      *
      * @return the name of the first parent that has one defined (including this scannable)
      */
@@ -529,24 +646,31 @@ public interface Scannable {
      * Return a meaningful {@link String} representation of this {@link Scannable} in
      * its chain of {@link #parents()} and {@link #actuals()}.
      * <p>
-     * 返回这当前 {@link Scannable} 在 {@link #parents()} 和 {@link #actuals()} 链中的一个有意义的 {@link String} 表示。
+     * 返回当前 {@link Scannable} 在 {@link #parents()} 和 {@link #actuals()} 链中的一个有意义的 {@link String} 表示。
      * </p>
      */
     default String stepName() {
         /*
          * Strip an operator name of various prefixes and suffixes.
+         * <p>
+         * 去除 operator 名称的各种前缀和后缀。
+         *
          * @param name the operator name, usually simpleClassName or fully-qualified classname.
+         *          通常是simpleClassName或完全限定的类名。
          * @return the stripped operator name
          */
         String name = getClass().getName();
+        // 去除内部类名
         int innerClassIndex = name.indexOf('$');
         if (innerClassIndex != -1) {
             name = name.substring(0, innerClassIndex);
         }
+        // 去除包名
         int stripPackageIndex = name.lastIndexOf('.');
         if (stripPackageIndex != -1) {
             name = name.substring(stripPackageIndex + 1);
         }
+        // 去除算子不相关名
         String stripped = OPERATOR_NAME_UNRELATED_WORDS_PATTERN
                 .matcher(name)
                 .replaceAll("");
@@ -584,7 +708,9 @@ public interface Scannable {
                 stepAfter = chain.get(i + 1);
             }
             //noinspection ConstantConditions
-            if (stepAfter != null && stepAfter.scan(Attr.ACTUAL_METADATA)) {
+            // if stepAfter is ACTUAL_METADATA: add stepAfter name and skip stepAfter
+            // else: add step name
+            if (stepAfter != null && Boolean.TRUE.equals(stepAfter.scan(Attr.ACTUAL_METADATA))) {
                 chainNames.add(stepAfter.stepName());
                 i++;
             } else {
@@ -596,83 +722,6 @@ public interface Scannable {
     }
 
     /**
-     * Return true whether the component is available for {@link #scan(Attr)} resolution.
-     *
-     * @return true whether the component is available for {@link #scan(Attr)} resolution.
-     */
-    default boolean isScanAvailable() {
-        return true;
-    }
-
-    /**
-     * This method is used internally by components to define their key-value mappings
-     * in a single place. Although it is ignoring the generic type of the {@link Attr} key,
-     * implementors should take care to return values of the correct type, and return
-     * {@literal null} if no specific value is available.
-     * <p>
-     *     在一个组件内部使用此方法来定义它的 key-value mappings in a single place。
-     *     虽然此方法忽略 {@link Attr} key 的泛型，
-     *     但具体实现应该注意返回正确类型的值，以及在指定值不可用时返回 null。
-     * </p>
-     * <p>
-     * For public consumption of attributes, prefer using {@link #scan(Attr)}, which will
-     * return a typed value and fall back to the key's default if the component didn't
-     * define any mapping.
-     * <p>
-     *     对于公共使用的属性，推荐使用 {@link #scan(Attr)}，它会返回指定类型的值，并且在组件没有定义 mapping 时返回默认值。
-     * </p>
-     *
-     * @param key a {@link Attr} to resolve for the component.
-     * @return the value associated to the key for that specific component, or null if none.
-     */
-    @Nullable
-    Object scanUnsafe(Attr key);
-
-    /**
-     * Introspect a component's specific state {@link Attr attribute}, returning an
-     * associated value specific to that component, or the default value associated with
-     * the key, or null if the attribute doesn't make sense for that particular component
-     * and has no sensible default.
-     * <p>
-     *     检查一个组件的指定 {@link Attr attribute}，返回相关值，或者 key Attr 的默认值。
-     *     如果这个 key Attr 对于该特定组件没有意义并且没有合理的默认值，则返回 null。
-     * </p>
-     *
-     * @param key a {@link Attr} to resolve for the component.
-     * @return a value associated to the key or null if unmatched or unresolved
-     */
-    @Nullable
-    default <T> T scan(Attr<T> key) {
-        // note tryConvert will just plain cast most of the time
-        // except e.g. for Attr<Scannable>
-        T value = key.tryConvert(scanUnsafe(key));
-        if (value == null)
-            return key.defaultValue();
-        return value;
-    }
-
-    /**
-     * Introspect a component's specific state {@link Attr attribute}. If there's no
-     * specific value in the component for that key, fall back to returning the
-     * provided non-null default.
-     *
-     * @param key          a {@link Attr} to resolve for the component.
-     * @param defaultValue a fallback value if key resolve to {@literal null}
-     * @return a value associated to the key or the provided default if unmatched or unresolved
-     */
-    default <T> T scanOrDefault(Attr<T> key, T defaultValue) {
-        T v;
-        //note tryConvert will just plain cast most of the time
-        //except e.g. for Attr<Scannable>
-        v = key.tryConvert(scanUnsafe(key));
-
-        if (v == null) {
-            return Objects.requireNonNull(defaultValue, "defaultValue");
-        }
-        return v;
-    }
-
-    /**
      * Visit this {@link Scannable} and its {@link #parents()}, starting by the furthest reachable parent,
      * and return a {@link Stream} of the tags which includes duplicates and outputs tags in declaration order
      * (grandparent tag(s) &gt; parent tag(s)  &gt; current tag(s)).
@@ -680,6 +729,14 @@ public interface Scannable {
      * Tags can only be discovered until no parent can be inspected, which happens either
      * when the source publisher has been reached or when a non-reactor intermediate operator
      * is present in the parent chain (i.e. a stage that is not {@link Scannable} for {@link Attr#PARENT}).
+     * <p>
+     *     访问当前 {@link Scannable} 和它的 {@link #parents()}，从最远可达的 parent 开始，
+     *     返回一个包含重复 tags 的 {@link Stream}，并按声明顺序输出 tags（祖父母标签 &gt; 父母标签 &gt; 当前标签）。
+     * </p>
+     * <p>
+     *     只有没有 parent 可以被检查了，标签才能被发现，这种情况要么发生在 source publisher 已经到达，
+     *     要么发生在父节点链中存在 non-reactor 的中间操作符（即 {@link Attr#PARENT} 不可扫描的阶段）。
+     * </p>
      *
      * @return the stream of tags for this {@link Scannable} and its reachable parents, including duplicates
      * @see #tagsDeduplicated()
@@ -714,5 +771,15 @@ public interface Scannable {
         return tags().collect(Collectors.toMap(Tuple2::getT1, Tuple2::getT2,
                 (s1, s2) -> s2, LinkedHashMap::new));
     }
+
+    /**
+     * The pattern for matching words unrelated to operator name.
+     * Used to strip an operator name of various prefixes and suffixes.
+     * <p>
+     * 匹配与操作符名称无关的单词。用于去除操作符名称中的各种前缀和后缀。
+     * </p>
+     */
+    Pattern OPERATOR_NAME_UNRELATED_WORDS_PATTERN =
+            Pattern.compile("Parallel|Flux|Mono|Publisher|Subscriber|Fuseable|Operator|Conditional");
 
 }
