@@ -166,12 +166,15 @@ public abstract class Exceptions {
 
 	/**
 	 * Prepare an unchecked {@link RuntimeException} that will bubble upstream if thrown
-	 * by an operator. <p>This method invokes {@link #throwIfFatal(Throwable)}.
+	 * by an operator.
+	 * <br> 准备一个 unchecked {@link RuntimeException}，如果由操作符抛出，它将向上游冒泡。
+	 * <p>
+	 * This method invokes {@link #throwIfFatal(Throwable)}.
 	 *
 	 * @param t the root cause
 	 *
 	 * @return an unchecked exception that should choose bubbling up over error callback
-	 * path
+	 * path <br> 一个 unchecked exception，应该选择通过错误回调路径向上冒泡
 	 */
 	public static RuntimeException bubble(Throwable t) {
 		throwIfFatal(t);
@@ -190,11 +193,14 @@ public abstract class Exceptions {
 	/**
 	 * Return an {@link UnsupportedOperationException} indicating that the error callback
 	 * on a subscriber was not implemented, yet an error was propagated.
+	 * <br>
+	 * 返回一个 {@link UnsupportedOperationException} ，指明 subscriber 没有实现错误的回调方法，但错误已传播。
 	 *
 	 * @param cause original error not processed by a receiver.
-	 * @return an {@link UnsupportedOperationException} indicating the error callback was
+	 * @return an {@link UnsupportedOperationException} (ErrorCallbackNotImplemented) indicating the error callback was
 	 * not implemented and holding the original propagated error.
 	 * @see #isErrorCallbackNotImplemented(Throwable)
+	 * @see ErrorCallbackNotImplemented
 	 */
 	public static UnsupportedOperationException errorCallbackNotImplemented(Throwable cause) {
 		Objects.requireNonNull(cause, "cause");
@@ -536,7 +542,7 @@ public abstract class Exceptions {
 	}
 
 	/**
-	 * Unwrap a particular {@code Throwable} only if it is was wrapped via
+	 * Unwrap a particular {@code Throwable} only if it was wrapped via
 	 * {@link #bubble(Throwable) bubble} or {@link #propagate(Throwable) propagate}.
 	 *
 	 * @param t the exception to unwrap

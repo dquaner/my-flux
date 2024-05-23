@@ -2,12 +2,7 @@ package org.xxts.reactor.core.publisher;
 
 import org.xxts.reactivestreams.Publisher;
 import org.xxts.reactor.core.Exceptions;
-import org.xxts.reactor.core.publisher.Flux;
-import org.xxts.reactor.core.publisher.*;
 import org.xxts.reactor.core.publisher.FluxOnAssembly.AssemblySnapshot;
-import org.xxts.reactor.core.publisher.Mono;
-import org.xxts.reactor.core.publisher.Operators;
-import org.xxts.reactor.core.publisher.FluxOnAssembly.MethodReturnSnapshot;
 import org.xxts.reactor.core.scheduler.Schedulers;
 import org.xxts.reactor.util.Logger;
 import org.xxts.reactor.util.Loggers;
@@ -41,27 +36,29 @@ public abstract class Hooks {
 	}
 
 	/**
-	 * Utility method to convert a {@link Publisher} to a {@link reactor.core.publisher.Mono} without applying {@link Hooks}.
+	 * Utility method to convert a {@link Publisher} to a {@link Mono} without applying {@link Hooks}.
 	 * Can optionally perform a "direct" (or unsafe) conversion when the caller is certain the {@link Publisher}
-	 * has {@link reactor.core.publisher.Mono} semantics.
+	 * has {@link Mono} semantics.
 	 *
-	 * @param publisher the {@link Publisher} to convert to a {@link reactor.core.publisher.Mono}
-	 * @param enforceMonoContract {@code true} to ensure {@link reactor.core.publisher.Mono} semantics (by cancelling on first onNext if source isn't already a {@link reactor.core.publisher.Mono}),
-	 * {@code false} to perform a direct conversion (see {@link reactor.core.publisher.Mono#fromDirect(Publisher)}).
+	 * @param publisher the {@link Publisher} to convert to a {@link Mono}
+	 * @param enforceMonoContract
+	 * 		{@code true} to ensure {@link Mono} semantics (by cancelling on first onNext if source isn't already a {@link Mono}),
+	 * 		{@code false} to perform a direct conversion (see {@link Mono#fromDirect(Publisher)}).
 	 * @param <T> the type of data emitted by the {@link Publisher}
-	 * @return the {@link Publisher} wrapped as a {@link reactor.core.publisher.Mono}, or the original if it was a {@link reactor.core.publisher.Mono}
+	 *
+	 * @return the {@link Publisher} wrapped as a {@link Mono}, or the original if it was a {@link Mono}
 	 */
-	public static <T> reactor.core.publisher.Mono<T> convertToMonoBypassingHooks(Publisher<T> publisher, boolean enforceMonoContract) {
-		return reactor.core.publisher.Mono.wrap(publisher, enforceMonoContract);
+	public static <T> Mono<T> convertToMonoBypassingHooks(Publisher<T> publisher, boolean enforceMonoContract) {
+		return Mono.wrap(publisher, enforceMonoContract);
 	}
 
 
 	/**
 	 * Add a {@link Publisher} operator interceptor for each operator created
-	 * ({@link reactor.core.publisher.Flux} or {@link reactor.core.publisher.Mono}). The passed function is applied to the original
+	 * ({@link Flux} or {@link Mono}). The passed function is applied to the original
 	 * operator {@link Publisher} and can return a different {@link Publisher},
 	 * on the condition that it generically maintains the same data type as the original.
-	 * Use of the {@link reactor.core.publisher.Flux}/{@link reactor.core.publisher.Mono} APIs is discouraged as it will recursively
+	 * Use of the {@link Flux}/{@link Mono} APIs is discouraged as it will recursively
 	 * call this hook, leading to {@link StackOverflowError}.
 	 * <p>
 	 * Note that sub-hooks are cumulative, but invoking this method twice with the same instance
@@ -70,7 +67,7 @@ public abstract class Hooks {
 	 * allows you to name the sub-hooks (and thus replace them or remove them individually
 	 * later on). Can be fully reset via {@link #resetOnEachOperator()}.
 	 * <p>
-	 * This pointcut function cannot make use of {@link reactor.core.publisher.Flux}, {@link reactor.core.publisher.Mono} or
+	 * This pointcut function cannot make use of {@link Flux}, {@link Mono} or
 	 * {@link ParallelFlux} APIs as it would lead to a recursive call to the hook: the
 	 * operator calls would effectively invoke onEachOperator from onEachOperator.
 	 * See {@link #convertToFluxBypassingHooks(Publisher)} and {@link #convertToMonoBypassingHooks(Publisher, boolean)}.
@@ -89,10 +86,10 @@ public abstract class Hooks {
 
 	/**
 	 * Add or replace a named {@link Publisher} operator interceptor for each operator created
-	 * ({@link reactor.core.publisher.Flux} or {@link reactor.core.publisher.Mono}). The passed function is applied to the original
+	 * ({@link Flux} or {@link Mono}). The passed function is applied to the original
 	 * operator {@link Publisher} and can return a different {@link Publisher},
 	 * on the condition that it generically maintains the same data type as the original.
-	 * Use of the {@link reactor.core.publisher.Flux}/{@link reactor.core.publisher.Mono} APIs is discouraged as it will recursively
+	 * Use of the {@link Flux}/{@link Mono} APIs is discouraged as it will recursively
 	 * call this hook, leading to {@link StackOverflowError}.
 	 * <p>
 	 * Note that sub-hooks are cumulative. Invoking this method twice with the same key will
@@ -102,7 +99,7 @@ public abstract class Hooks {
 	 * back will result in the execution order changing (the later sub-hook being executed
 	 * last). Can be fully reset via {@link #resetOnEachOperator()}.
 	 * <p>
-	 * This pointcut function cannot make use of {@link reactor.core.publisher.Flux}, {@link reactor.core.publisher.Mono} or
+	 * This pointcut function cannot make use of {@link Flux}, {@link Mono} or
 	 * {@link ParallelFlux} APIs as it would lead to a recursive call to the hook: the
 	 * operator calls would effectively invoke onEachOperator from onEachOperator.
 	 * See {@link #convertToFluxBypassingHooks(Publisher)} and {@link #convertToMonoBypassingHooks(Publisher, boolean)}.
@@ -181,20 +178,33 @@ public abstract class Hooks {
 
 	/**
 	 * Add a {@link Publisher} operator interceptor for the last operator created
-	 * in every flow ({@link reactor.core.publisher.Flux} or {@link reactor.core.publisher.Mono}). The passed function is applied
+	 * in every flow ({@link Flux} or {@link Mono}). The passed function is applied
 	 * to the original operator {@link Publisher} and can return a different {@link Publisher},
 	 * on the condition that it generically maintains the same data type as the original.
+	 * <br>
+	 * 为每个流({@link Flux} 或 {@link Mono})中最后创建的算子添加一个 {@link Publisher} 算子拦截器。
+	 * 传入的 function 应用于最后创建的算子 {@link Publisher}，返回一个新的 {@link Publisher}，它们通常处理相同的数据类型。
+	 *
 	 * <p>
 	 * Note that sub-hooks are cumulative, but invoking this method twice with the same
 	 * instance (or any instance that has the same `toString`) will result in only a single
 	 * instance being applied. See {@link #onLastOperator(String, Function)} for a variant
 	 * that allows you to name the sub-hooks (and thus replace them or remove them individually
 	 * later on). Can be fully reset via {@link #resetOnLastOperator()}.
+	 * <br>
+	 * 注意：onLastOperatorHooks 是可以累积的，但如果用同一个 hook 实例（或具有相同 toString() 的实例）调用此方法两次，只会添加一个实例。
+	 * {@link #onLastOperator(String, Function)} 允许给这些 hooks 命名（从而在以后单独替换或删除它们）。
+	 * 通过 {@link #resetOnLastOperator()} 完全重置这些 hooks。
+	 *
 	 * <p>
-	 * This pointcut function cannot make use of {@link reactor.core.publisher.Flux}, {@link reactor.core.publisher.Mono} or
+	 * This pointcut function cannot make use of {@link Flux}, {@link Mono} or
 	 * {@link ParallelFlux} APIs as it would lead to a recursive call to the hook: the
 	 * operator calls would effectively invoke onEachOperator from onEachOperator.
 	 * See {@link #convertToFluxBypassingHooks(Publisher)} and {@link #convertToMonoBypassingHooks(Publisher, boolean)}.
+	 * <br>
+	 * 这个切入点函数不能使用 {@link Flux}，{@link Mono} 或 {@link ParallelFlux} APIs，
+	 * 因为它会导致对 hook 的递归调用：对算子的调用将有效地从 onEachOperator 调用 onEachOperator。
+	 * 参见 {@link #convertToFluxBypassingHooks(Publisher)} 和 {@link #convertToMonoBypassingHooks(Publisher, boolean)}。
 	 *
 	 * @param onLastOperator the sub-hook: a function to intercept last operation call
 	 * (e.g. {@code map(fn2)} in {@code flux.map(fn).map(fn2).subscribe()})
@@ -210,10 +220,10 @@ public abstract class Hooks {
 
 	/**
 	 * Add or replace a named {@link Publisher} operator interceptor for the last operator created
-	 * in every flow ({@link reactor.core.publisher.Flux} or {@link reactor.core.publisher.Mono}). The passed function is applied
+	 * in every flow ({@link Flux} or {@link Mono}). The passed function is applied
 	 * to the original operator {@link Publisher} and can return a different {@link Publisher},
 	 * on the condition that it generically maintains the same data type as the original.
-	 * Use of the {@link reactor.core.publisher.Flux}/{@link reactor.core.publisher.Mono} APIs is discouraged as it will recursively
+	 * Use of the {@link Flux}/{@link Mono} APIs is discouraged as it will recursively
 	 * call this hook, leading to {@link StackOverflowError}.
 	 * <p>
 	 * Note that sub-hooks are cumulative. Invoking this method twice with the same key will
@@ -223,7 +233,7 @@ public abstract class Hooks {
 	 * back will result in the execution order changing (the later sub-hook being executed
 	 * last). Can be fully reset via {@link #resetOnLastOperator()}.
 	 * <p>
-	 * This pointcut function cannot make use of {@link reactor.core.publisher.Flux}, {@link reactor.core.publisher.Mono} or
+	 * This pointcut function cannot make use of {@link Flux}, {@link Mono} or
 	 * {@link ParallelFlux} APIs as it would lead to a recursive call to the hook: the
 	 * operator calls would effectively invoke onEachOperator from onEachOperator.
 	 * See {@link #convertToFluxBypassingHooks(Publisher)} and {@link #convertToMonoBypassingHooks(Publisher, boolean)}.
@@ -342,8 +352,8 @@ public abstract class Hooks {
 	 * If it is also a {@link java.util.function.BiPredicate}, its
 	 * {@link java.util.function.BiPredicate#test(Object, Object) test} method should be
 	 * used to determine if an error should be processed (matching predicate) or completely
-	 * skipped (non-matching predicate). Typical usage, as in {@link reactor.core.publisher.Operators}, is to
-	 * check if the predicate matches and fallback to {@link reactor.core.publisher.Operators#onOperatorError(Throwable, Context)}
+	 * skipped (non-matching predicate). Typical usage, as in {@link Operators}, is to
+	 * check if the predicate matches and fallback to {@link Operators#onOperatorError(Throwable, Context)}
 	 * if it doesn't.
 	 *
 	 * @param onNextError the new {@link BiFunction} to use.
@@ -352,14 +362,14 @@ public abstract class Hooks {
 		Objects.requireNonNull(onNextError, "onNextError");
 		log.debug("Hooking new default : onNextError");
 
-		if (onNextError instanceof reactor.core.publisher.OnNextFailureStrategy) {
+		if (onNextError instanceof OnNextFailureStrategy) {
 			synchronized(log) {
-				onNextErrorHook = (reactor.core.publisher.OnNextFailureStrategy) onNextError;
+				onNextErrorHook = (OnNextFailureStrategy) onNextError;
 			}
 		}
 		else {
 			synchronized(log) {
-				onNextErrorHook = new reactor.core.publisher.OnNextFailureStrategy.LambdaOnNextErrorStrategy(onNextError);
+				onNextErrorHook = new OnNextFailureStrategy.LambdaOnNextErrorStrategy(onNextError);
 			}
 		}
 	}
@@ -474,7 +484,7 @@ public abstract class Hooks {
 
 	/**
 	 * Reset global onNext error handling strategy to terminating the sequence with
-	 * an onError and cancelling upstream ({@link reactor.core.publisher.OnNextFailureStrategy#STOP}).
+	 * an onError and cancelling upstream ({@link OnNextFailureStrategy#STOP}).
 	 */
 	public static void resetOnNextError() {
 		log.debug("Reset to factory defaults : onNextError");
@@ -485,10 +495,10 @@ public abstract class Hooks {
 
 	/**
 	 * Globally enables the {@link Context} loss detection in operators like
-	 * {@link reactor.core.publisher.Flux#transform} or {@link reactor.core.publisher.Mono#transformDeferred} when non-Reactor types are used.
+	 * {@link Flux#transform} or {@link Mono#transformDeferred} when non-Reactor types are used.
 	 *
 	 * An exception will be thrown upon applying the transformation if the original {@link Context} isn't reachable
-	 * (ie. it has been replaced by a totally different {@link Context}, or no {@link Context} at all)
+	 * (i.e. it has been replaced by a totally different {@link Context}, or no {@link Context} at all)
 	 */
 	public static void enableContextLossTracking() {
 		DETECT_CONTEXT_LOSS = true;
@@ -513,8 +523,8 @@ public abstract class Hooks {
 	 * to be on the classpath to have an effect.
 	 * Using the implicit global {@code ContextRegistry} it reads entries present in
 	 * the modified {@link Context} using
-	 * {@link reactor.core.publisher.Flux#contextWrite(ContextView)} (or {@link reactor.core.publisher.Mono#contextWrite(ContextView)})
-	 * and {@link reactor.core.publisher.Flux#contextWrite(Function)} (or {@link reactor.core.publisher.Mono#contextWrite(Function)})
+	 * {@link Flux#contextWrite(ContextView)} (or {@link Mono#contextWrite(ContextView)})
+	 * and {@link Flux#contextWrite(Function)} (or {@link Mono#contextWrite(Function)})
 	 * and restores all {@link ThreadLocal}s associated via same keys for which
 	 * {@code ThreadLocalAccessor}s are registered.
 	 * <p>
@@ -523,9 +533,9 @@ public abstract class Hooks {
 	 * used when signals are delivered downstream, making the {@code contextWrite(...)}
 	 * a logical boundary for the context propagation mechanism.
 	 * <p>
-	 * This mechanism automatically performs {@link reactor.core.publisher.Flux#contextCapture()}
-	 * and {@link reactor.core.publisher.Mono#contextCapture()} in {@link reactor.core.publisher.Flux#blockFirst()},
-	 * {@link reactor.core.publisher.Flux#blockLast()}, {@link reactor.core.publisher.Flux#toIterable()}, and {@link reactor.core.publisher.Mono#block()} (and
+	 * This mechanism automatically performs {@link Flux#contextCapture()}
+	 * and {@link Mono#contextCapture()} in {@link Flux#blockFirst()},
+	 * {@link Flux#blockLast()}, {@link Flux#toIterable()}, and {@link Mono#block()} (and
 	 * their overloads).
 	 * @since 3.5.3
 	 */
@@ -581,7 +591,7 @@ public abstract class Hooks {
 		return composite;
 	}
 
-	//Hooks that are transformative
+	//Hooks that are transformative(可变的)
 	static Function<Publisher, Publisher> onEachOperatorHook;
 	static volatile Function<Publisher, Publisher> onLastOperatorHook;
 	static volatile BiFunction<? super Throwable, Object, ? extends Throwable> onOperatorErrorHook;
@@ -591,11 +601,14 @@ public abstract class Hooks {
 	static volatile Consumer<Object>            onNextDroppedHook;
 
 	//Special hook that is between the two (strategy can be transformative, but not named)
-	static volatile reactor.core.publisher.OnNextFailureStrategy onNextErrorHook;
+	static volatile OnNextFailureStrategy onNextErrorHook;
 
 
+	//hook trackers
 	//For transformative hooks, allow to name them, keep track in an internal Map that retains insertion order
+	//对于可变 hooks，允许命名它们，在内部 Map 中追踪并保留插入顺序
 	//internal use only as it relies on external synchronization
+	//只在内部使用，因为它依赖于外部同步
 	private static final LinkedHashMap<String, Function<? super Publisher<Object>, ? extends Publisher<Object>>> onEachOperatorHooks;
 	private static final LinkedHashMap<String, Function<? super Publisher<Object>, ? extends Publisher<Object>>> onLastOperatorHooks;
 	private static final LinkedHashMap<String, BiFunction<? super Throwable, Object, ? extends Throwable>> onOperatorErrorHooks;
@@ -604,7 +617,7 @@ public abstract class Hooks {
 
 	private static Function<Queue<?>, Queue<?>> QUEUE_WRAPPER = Function.identity();
 
-	//Immutable views on hook trackers, for testing purpose
+	//Immutable(不可变) views on hook trackers, for testing purpose
 	static final Map<String, Function<? super Publisher<Object>, ? extends Publisher<Object>>> getOnEachOperatorHooks() {
 		return Collections.unmodifiableMap(onEachOperatorHooks);
 	}
@@ -620,34 +633,45 @@ public abstract class Hooks {
 	/**
 	 * A key that can be used to store a sequence-specific {@link Hooks#onErrorDropped(Consumer)}
 	 * hook in a {@link Context}, as a {@link Consumer Consumer&lt;Throwable&gt;}.
+	 * <br>
+	 * 在 {@link Context} 中存储特定于 sequence 的 {@link Hooks#onErrorDropped(Consumer)} hook，
+	 * 以 {@link Consumer Consumer&lt;Throwable&gt;} 的格式。
 	 */
 	static final String KEY_ON_ERROR_DROPPED = "reactor.onErrorDropped.local";
 	/**
 	 * A key that can be used to store a sequence-specific {@link Hooks#onNextDropped(Consumer)}
 	 * hook in a {@link Context}, as a {@link Consumer Consumer&lt;Object&gt;}.
+	 * <br>
+	 * 在 {@link Context} 中存储特定于 sequence 的 {@link Hooks#onNextDropped(Consumer)} hook，
+	 * 以 {@link Consumer Consumer&lt;Object&gt;} 的格式。
 	 */
 	static final String KEY_ON_NEXT_DROPPED = "reactor.onNextDropped.local";
 	/**
 	 * A key that can be used to store a sequence-specific {@link Hooks#onOperatorError(BiFunction)}
 	 * hook in a {@link Context}, as a {@link BiFunction BiFunction&lt;Throwable, Object, Throwable&gt;}.
+	 * <br>
+	 * 在 {@link Context} 中存储特定于 sequence 的 {@link Hooks#onOperatorError(BiFunction)} hook，
+	 * 以 {@link BiFunction BiFunction&lt;Throwable, Object, Throwable&gt;} 的格式。
 	 */
 	static final String KEY_ON_OPERATOR_ERROR = "reactor.onOperatorError.local";
 
 	/**
 	 * A key that can be used to store a sequence-specific onDiscard(Consumer)
 	 * hook in a {@link Context}, as a {@link Consumer Consumer&lt;Object&gt;}.
+	 * <br>
+	 * 在 {@link Context} 中存储特定于 sequence 的 onDiscard(Consumer) hook，
+	 * 以 {@link Consumer Consumer&lt;Object&gt;} 的格式。
 	 */
 	static final String KEY_ON_DISCARD = "reactor.onDiscard.local";
 
 	/**
 	 * A key that can be used to store a sequence-specific {@link Hooks#onOperatorError(BiFunction)}
-	 * hook THAT IS ONLY APPLIED TO Operators{@link Operators#onRejectedExecution(Throwable, Context) onRejectedExecution}
+	 * hook THAT IS ONLY APPLIED TO {@link Operators#onRejectedExecution(Throwable, Context)}
 	 * in a {@link Context}, as a {@link BiFunction BiFunction&lt;Throwable, Object, Throwable&gt;}.
 	 */
 	static final String KEY_ON_REJECTED_EXECUTION = "reactor.onRejectedExecution.local";
 
 	static boolean GLOBAL_TRACE = initStaticGlobalTrace();
-
 
 	static boolean DETECT_CONTEXT_LOSS = false;
 
@@ -657,7 +681,11 @@ public abstract class Hooks {
 		onOperatorErrorHooks = new LinkedHashMap<>(1);
 	}
 
-	//isolated on static method for testing purpose
+	/**
+	 * isolated on static method for testing purpose
+	 * <br>
+	 * 用于测试的静态隔离方法
+	 */
 	static boolean initStaticGlobalTrace() {
 		return Boolean.parseBoolean(System.getProperty("reactor.trace.operatorStacktrace",
 				"false"));
@@ -668,12 +696,12 @@ public abstract class Hooks {
 
 	static <T, P extends Publisher<T>> Publisher<T> addAssemblyInfo(P publisher, AssemblySnapshot stacktrace) {
 		if (publisher instanceof Callable) {
-			if (publisher instanceof reactor.core.publisher.Mono) {
-				return new MonoCallableOnAssembly<>((reactor.core.publisher.Mono<T>) publisher, stacktrace);
+			if (publisher instanceof Mono) {
+				return new MonoCallableOnAssembly<>((Mono<T>) publisher, stacktrace);
 			}
-			return new FluxCallableOnAssembly<>((reactor.core.publisher.Flux<T>) publisher, stacktrace);
+			return new FluxCallableOnAssembly<>((Flux<T>) publisher, stacktrace);
 		}
-		if (publisher instanceof reactor.core.publisher.Mono) {
+		if (publisher instanceof Mono) {
 			return new MonoOnAssembly<>((Mono<T>) publisher, stacktrace);
 		}
 		if (publisher instanceof ParallelFlux) {

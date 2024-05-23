@@ -5,6 +5,7 @@ import org.xxts.reactivestreams.Subscriber;
 import org.xxts.reactivestreams.Subscription;
 import org.xxts.reactor.core.CoreSubscriber;
 import org.xxts.reactor.core.Disposable;
+import org.xxts.reactor.core.Exceptions;
 import org.xxts.reactor.util.context.*;
 
 import java.util.function.Function;
@@ -29,7 +30,7 @@ public interface FluxSink<T> {
      * <br> 可能在下游发生致命错误时抛出未检查异常，该错误无法传播到任何异步处理程序（也称为冒泡异常）。
      *
      * @see Subscriber#onNext(Object)
-     * @see org.xxts.reactor.core.Exceptions#throwIfFatal(Throwable)
+     * @see Exceptions#throwIfFatal(Throwable)
      *
      * @param t the value to emit, not null
      * @return this sink for chaining further signals
@@ -85,6 +86,8 @@ public interface FluxSink<T> {
     boolean isCancelled();
 
     /**
+     * 当前 {@link FluxSink} 收到请求（下游 {@link Subscription#request(long)}）时的回调方法。
+     * <p>
      * Attaches a {@link LongConsumer} to this {@link FluxSink} that will be notified of
      * any request to this sink.
      * <p>
@@ -128,6 +131,8 @@ public interface FluxSink<T> {
     FluxSink<T> onRequest(LongConsumer consumer);
 
     /**
+     * 当前 {@link FluxSink} 被取消（下游 {@link Subscription#cancel()}）时的回调方法。
+     * <p>
      * Attach a {@link Disposable} as a callback for when this {@link FluxSink} is
      * cancelled. At most one callback can be registered, and subsequent calls to this method
      * will result in the immediate disposal of the extraneous {@link Disposable}.
@@ -147,6 +152,8 @@ public interface FluxSink<T> {
     FluxSink<T> onCancel(Disposable d);
 
     /**
+     * 当前 {@link FluxSink} 不再可用（发送了终止信号 error/complete 或下游 {@link Subscription#cancel()} 请求取消）时的回调方法。
+     * <p>
      * Attach a {@link Disposable} as a callback for when this {@link FluxSink} is effectively
      * disposed, that is it cannot be used anymore. This includes both having played terminal
      * signals (onComplete, onError) and having been cancelled (see {@link #onCancel(Disposable)}).

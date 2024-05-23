@@ -11,12 +11,83 @@ import org.xxts.reactor.util.annotation.Nullable;
 import org.xxts.reactor.util.context.Context;
 import org.xxts.reactor.util.context.ContextView;
 import org.xxts.reactor.util.retry.Retry;
+import reactor.core.Exceptions;
+import reactor.core.Fuseable;
+import reactor.core.publisher.*;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.Objects;
 import java.util.function.*;
 
 public abstract class Flux<T> implements CorePublisher<T> {
+
+    /**
+     * Enrich the {@link Context} visible from downstream for the benefit of upstream
+     * operators, by making all values from the provided {@link ContextView} visible on top
+     * of pairs from downstream.
+     * <br>
+     * 丰富下游传来的 {@link Context} 以备上游算子使用：将给定 {@link ContextView} 提供的所有值加到下游的 {@link Context} 中。
+     *
+     * <p>
+     * A {@link Context} (and its {@link ContextView}) is tied to a given subscription
+     * and is read by querying the downstream {@link Subscriber}. {@link Subscriber} that
+     * don't enrich the context instead access their own downstream's context. As a result,
+     * this operator conceptually enriches a {@link Context} coming from under it in the chain
+     * (downstream, by default an empty one) and makes the new enriched {@link Context}
+     * visible to operators above it in the chain.
+     * <br>
+     * {@link Context}（及其 {@link ContextView}）被绑定到一个给定的 subscription 上，并可以通过查询下游 {@link Subscriber} 来读取。
+     * 没有 enrich context 的 {@link Subscriber} 会访问自己下游的 context。因此，从概念上说，这个算子 enrich 了链中
+     * 位于它下面的 {@link Context}（下游，默认情况下是空的），并使新的 enrich 过的 {@link Context} 对链中位于它上面的算子可见。
+     *
+     * @param contextToAppend the {@link ContextView} to merge with the downstream {@link Context},
+     *                        resulting in a new more complete {@link Context} that will be visible from upstream.
+     * @return a contextualized {@link Flux}
+     * @see ContextView
+     */
+    public final Flux<T> contextWrite(ContextView contextToAppend) {
+        return contextWrite(c -> c.putAll(contextToAppend));
+    }
+
+    /**
+     * Enrich the {@link Context} visible from downstream for the benefit of upstream
+     * operators, by applying a {@link Function} to the downstream {@link Context}.
+     * <br>
+     * 丰富下游传来的 {@link Context} 以备上游算子使用：对下游 {@link Context} 应用 {@link Function}。
+     *
+     * <p>
+     * The {@link Function} takes a {@link Context} for convenience, allowing to easily
+     * call {@link Context#put(Object, Object) write APIs} to return a new {@link Context}.
+     * <br>
+     * 为方便起见，该 {@link Function} 接受一个 {@link Context}，允许轻松调用 {@link Context#put(Object, Object) write APIs}
+     * 来返回一个新的 {@link Context}。
+     *
+     * <p>
+     * A {@link Context} (and its {@link ContextView}) is tied to a given subscription
+     * and is read by querying the downstream {@link Subscriber}. {@link Subscriber} that
+     * don't enrich the context instead access their own downstream's context. As a result,
+     * this operator conceptually enriches a {@link Context} coming from under it in the chain
+     * (downstream, by default an empty one) and makes the new enriched {@link Context}
+     * visible to operators above it in the chain.
+     * <br>
+     * {@link Context}（及其 {@link ContextView}）被绑定到一个给定的 subscription 上，并可以通过查询下游 {@link Subscriber} 来读取。
+     * 没有 enrich context 的 {@link Subscriber} 会访问自己下游的 context。因此，从概念上说，这个算子 enrich 了链中
+     * 位于它下面的 {@link Context}（下游，默认情况下是空的），并使新的 enrich 过的 {@link Context} 对链中位于它上面的算子可见。
+     *
+     * @param contextModifier the {@link Function} to apply to the downstream {@link Context},
+     *                        resulting in a new more complete {@link Context} that will be visible from upstream.
+     * @return a contextualized {@link reactor.core.publisher.Flux}
+     * @see Context
+     */
+    public final Flux<T> contextWrite(Function<Context, Context> contextModifier) {
+        if (ContextPropagationSupport.shouldPropagateContextToThreadLocals()) {
+            return onAssembly(new FluxContextWriteRestoringThreadLocals<>(
+                    this, contextModifier
+            ));
+        }
+        return onAssembly(new FluxContextWrite<>(this, contextModifier));
+    }
 
     /**
      * Programmatically create a {@link Flux} with the capability of emitting multiple
@@ -259,73 +330,6 @@ public abstract class Flux<T> implements CorePublisher<T> {
     }
 
     /**
-     * Enrich the {@link Context} visible from downstream for the benefit of upstream
-     * operators, by making all values from the provided {@link ContextView} visible on top
-     * of pairs from downstream.
-     * <br>
-     * 丰富下游传来的 {@link Context} 以备上游算子使用：将给定 {@link ContextView} 提供的所有值加到下游的 {@link Context} 中。
-     *
-     * <p>
-     * A {@link Context} (and its {@link ContextView}) is tied to a given subscription
-     * and is read by querying the downstream {@link Subscriber}. {@link Subscriber} that
-     * don't enrich the context instead access their own downstream's context. As a result,
-     * this operator conceptually enriches a {@link Context} coming from under it in the chain
-     * (downstream, by default an empty one) and makes the new enriched {@link Context}
-     * visible to operators above it in the chain.
-     * <br>
-     * {@link Context}（及其 {@link ContextView}）被绑定到一个给定的 subscription 上，并可以通过查询下游 {@link Subscriber} 来读取。
-     * 没有 enrich context 的 {@link Subscriber} 会访问自己下游的 context。因此，从概念上说，这个算子 enrich 了链中
-     * 位于它下面的 {@link Context}（下游，默认情况下是空的），并使新的 enrich 过的 {@link Context} 对链中位于它上面的算子可见。
-     *
-     * @param contextToAppend the {@link ContextView} to merge with the downstream {@link Context},
-     *                        resulting in a new more complete {@link Context} that will be visible from upstream.
-     * @return a contextualized {@link Flux}
-     * @see ContextView
-     */
-    public final Flux<T> contextWrite(ContextView contextToAppend) {
-        return contextWrite(c -> c.putAll(contextToAppend));
-    }
-
-    /**
-     * Enrich the {@link Context} visible from downstream for the benefit of upstream
-     * operators, by applying a {@link Function} to the downstream {@link Context}.
-     * <br>
-     * 丰富下游传来的 {@link Context} 以备上游算子使用：对下游 {@link Context} 应用 {@link Function}。
-     *
-     * <p>
-     * The {@link Function} takes a {@link Context} for convenience, allowing to easily
-     * call {@link Context#put(Object, Object) write APIs} to return a new {@link Context}.
-     * <br>
-     * 为方便起见，该 {@link Function} 接受一个 {@link Context}，允许轻松调用 {@link Context#put(Object, Object) write APIs}
-     * 来返回一个新的 {@link Context}。
-     *
-     * <p>
-     * A {@link Context} (and its {@link ContextView}) is tied to a given subscription
-     * and is read by querying the downstream {@link Subscriber}. {@link Subscriber} that
-     * don't enrich the context instead access their own downstream's context. As a result,
-     * this operator conceptually enriches a {@link Context} coming from under it in the chain
-     * (downstream, by default an empty one) and makes the new enriched {@link Context}
-     * visible to operators above it in the chain.
-     * <br>
-     * {@link Context}（及其 {@link ContextView}）被绑定到一个给定的 subscription 上，并可以通过查询下游 {@link Subscriber} 来读取。
-     * 没有 enrich context 的 {@link Subscriber} 会访问自己下游的 context。因此，从概念上说，这个算子 enrich 了链中
-     * 位于它下面的 {@link Context}（下游，默认情况下是空的），并使新的 enrich 过的 {@link Context} 对链中位于它上面的算子可见。
-     *
-     * @param contextModifier the {@link Function} to apply to the downstream {@link Context},
-     *                        resulting in a new more complete {@link Context} that will be visible from upstream.
-     * @return a contextualized {@link reactor.core.publisher.Flux}
-     * @see Context
-     */
-    public final Flux<T> contextWrite(Function<Context, Context> contextModifier) {
-        if (ContextPropagationSupport.shouldPropagateContextToThreadLocals()) {
-            return onAssembly(new FluxContextWriteRestoringThreadLocals<>(
-                    this, contextModifier
-            ));
-        }
-        return onAssembly(new FluxContextWrite<>(this, contextModifier));
-    }
-
-    /**
      * Programmatically create a {@link Flux} with the capability of emitting multiple
      * elements from a single-threaded producer through the {@link FluxSink} API. For
      * a multi-threaded capable alternative, see {@link #create(Consumer)}.
@@ -520,6 +524,60 @@ public abstract class Flux<T> implements CorePublisher<T> {
      */
     public final Flux<T> retryWhen(Retry retrySpec) {
         return onAssembly(new FluxRetryWhen<>(this, retrySpec));
+    }
+
+
+    /**
+     * Unchecked wrap of {@link Publisher} as {@link Flux}, supporting {@link Fuseable} sources.
+     * Note that this bypasses {@link Hooks#onEachOperator(String, Function) assembly hooks}.
+     *
+     * @param source the {@link Publisher} to wrap
+     * @param <I> input upstream type
+     * @return a wrapped {@link Flux}
+     */
+    @SuppressWarnings("unchecked")
+    static <I> Flux<I> wrap(Publisher<? extends I> source) {
+        boolean shouldWrap = ContextPropagationSupport.shouldWrapPublisher(source);
+        if (source instanceof reactor.core.publisher.Flux) {
+            if (!shouldWrap) {
+                return (Flux<I>) source;
+            }
+            return ContextPropagation.fluxRestoreThreadLocals(
+                    (Flux<? extends I>) source, source instanceof Fuseable);
+        }
+
+        //for scalars we'll instantiate the operators directly to avoid onAssembly
+        if (source instanceof Fuseable.ScalarCallable) {
+            try {
+                @SuppressWarnings("unchecked") I t =
+                        ((Fuseable.ScalarCallable<I>) source).call();
+                if (t != null) {
+                    return new FluxJust<>(t);
+                }
+                return FluxEmpty.instance();
+            }
+            catch (Exception e) {
+                return new FluxError<>(Exceptions.unwrap(e));
+            }
+        }
+
+        Flux<I> target;
+        boolean fuseable = source instanceof Fuseable;
+        if (source instanceof Mono) {
+            if (fuseable) {
+                target = new FluxSourceMonoFuseable<>((Mono<I>) source);
+            } else {
+                target = new FluxSourceMono<>((Mono<I>) source);
+            }
+        } else if (fuseable) {
+            target = new FluxSourceFuseable<>(source);
+        } else {
+            target = new FluxSource<>(source);
+        }
+        if (shouldWrap) {
+            return ContextPropagation.fluxRestoreThreadLocals(target, fuseable);
+        }
+        return target;
     }
 
     /**

@@ -44,7 +44,9 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
  */
 public abstract class BaseSubscriber<T> implements CoreSubscriber<T>, Subscription,
                                                    Disposable {
-
+	/**
+	 * current {@link Subscription}
+	 */
 	volatile Subscription subscription;
 
 	static AtomicReferenceFieldUpdater<BaseSubscriber, Subscription> S =
@@ -109,6 +111,8 @@ public abstract class BaseSubscriber<T> implements CoreSubscriber<T>, Subscripti
 	 * to call {@link #request(long)} as an initial request. Values other than the
 	 * unbounded {@code Long.MAX_VALUE} imply that you'll also call request in
 	 * {@link #hookOnNext(Object)}.
+	 * <br> 无界 {@code Long.MAX_VALUE} 之外的值说明你在 {@link #hookOnNext(Object)} 中也调用了 request。
+	 *
 	 * <p> Defaults to request unbounded Long.MAX_VALUE as in {@link #requestUnbounded()}
 	 *
 	 * @param subscription the subscription to optionally process
@@ -139,6 +143,8 @@ public abstract class BaseSubscriber<T> implements CoreSubscriber<T>, Subscripti
 	/**
 	 * Optional hook for error processing. Default is to call
 	 * {@link Exceptions#errorCallbackNotImplemented(Throwable)}.
+	 * <br>
+	 * 默认情况下会抛出一个 {@link UnsupportedOperationException} (ErrorCallbackNotImplemented)。
 	 *
 	 * @param throwable the error to process
 	 */
@@ -149,6 +155,8 @@ public abstract class BaseSubscriber<T> implements CoreSubscriber<T>, Subscripti
 	/**
 	 * Optional hook executed when the subscription is cancelled by calling this
 	 * Subscriber's {@link #cancel()} method. Defaults to doing nothing.
+	 * <br>
+	 * 可选钩子，在调用当前 Subscriber 的 {@link #cancel()} 方法取消订阅时执行。默认为 NO-OP。
 	 */
 	protected void hookOnCancel() {
 		//NO-OP
@@ -169,6 +177,17 @@ public abstract class BaseSubscriber<T> implements CoreSubscriber<T>, Subscripti
 		//NO-OP
 	}
 
+	/**
+	 * Optional hook executed after any of the termination events (onError, onComplete,
+	 * cancel). The hook is executed in addition to and after {@link #hookOnError(Throwable)},
+	 * {@link #hookOnComplete()} and {@link #hookOnCancel()} hooks, even if these callbacks
+	 * fail. Defaults to doing nothing. A failure of the callback will be caught by
+	 * {@link Operators#onErrorDropped(Throwable, Context)}.
+	 *
+	 * @param type the type of termination event that triggered the hook
+	 * ({@link SignalType#ON_ERROR}, {@link SignalType#ON_COMPLETE} or
+	 * {@link SignalType#CANCEL})
+	 */
 	void safeHookFinally(SignalType type) {
 		try {
 			hookFinally(type);

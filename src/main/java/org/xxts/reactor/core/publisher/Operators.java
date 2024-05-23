@@ -3,13 +3,12 @@ package org.xxts.reactor.core.publisher;
 import org.xxts.reactivestreams.Publisher;
 import org.xxts.reactivestreams.Subscriber;
 import org.xxts.reactivestreams.Subscription;
-import org.xxts.reactor.core.*;
+import org.xxts.reactor.core.CorePublisher;
+import org.xxts.reactor.core.CoreSubscriber;
+import org.xxts.reactor.core.Exceptions;
 import org.xxts.reactor.core.Fuseable.QueueSubscription;
+import org.xxts.reactor.core.Scannable;
 import org.xxts.reactor.core.Scannable.Attr.RunStyle;
-import org.xxts.reactor.core.publisher.Flux;
-import org.xxts.reactor.core.publisher.Hooks;
-import org.xxts.reactor.core.publisher.Mono;
-import org.xxts.reactor.core.publisher.*;
 import org.xxts.reactor.util.Logger;
 import org.xxts.reactor.util.Loggers;
 import org.xxts.reactor.util.annotation.Nullable;
@@ -26,7 +25,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static reactor.core.Fuseable.NONE;
+import static org.xxts.reactor.core.Fuseable.NONE;
 
 /**
  * A helper to support "Operator" writing, handle noop subscriptions, validate request
@@ -692,11 +691,14 @@ public abstract class Operators {
 	 * result error will be passed via onError to the operator downstream after
 	 * checking for fatal error via
 	 * {@link Exceptions#throwIfFatal(Throwable)}.
+	 * <br>
+	 * 映射一个“算子”错误。
+	 * 生成的 error 在经过 {@link Exceptions#throwIfFatal(Throwable)} 检查后，将通过 onError 传递给下游的算子。
+	 *
 	 *
 	 * @param error the callback or operator error
 	 * @param context a context that might hold a local error consumer
 	 * @return mapped {@link Throwable}
-	 *
 	 */
 	public static Throwable onOperatorError(Throwable error, Context context) {
 		return onOperatorError(null, error, context);
@@ -707,10 +709,14 @@ public abstract class Operators {
 	 * result error will be passed via onError to the operator downstream.
 	 * {@link Subscription} will be cancelled after checking for fatal error via
 	 * {@link Exceptions#throwIfFatal(Throwable)}.
+	 * <br>
+	 * 给定算子的 parent {@link Subscription}，映射一个“算子”错误。
+	 * 生成的 error 将通过 onError 传递给下游的算子。
+	 * 在经过 {@link Exceptions#throwIfFatal(Throwable)} 检查致命错误后，{@link Subscription} 会被取消。
 	 *
 	 * @param subscription the linked operator parent {@link Subscription}
 	 * @param error the callback or operator error
-	 * @param context a context that might hold a local error consumer
+	 * @param context a context that might hold a local error consumer (onOperatorErrorHook)
 	 * @return mapped {@link Throwable}
 	 *
 	 */
@@ -726,12 +732,18 @@ public abstract class Operators {
 	 * {@link Subscription} will be cancelled after checking for fatal error via
 	 * {@link Exceptions#throwIfFatal(Throwable)}. Takes an additional signal, which
 	 * can be added as a suppressed exception if it is a {@link Throwable} and the
-	 * default {@link reactor.core.publisher.Hooks#onOperatorError(BiFunction) hook} is in place.
+	 * default {@link Hooks#onOperatorError(BiFunction) hook} is in place.
+	 * <br>
+	 * 给定算子的 parent {@link Subscription}，映射一个“算子”错误。
+	 * 生成的 error 将通过 onError 传递给下游的算子。
+	 * 在经过 {@link Exceptions#throwIfFatal(Throwable)} 检查致命错误后，{@link Subscription} 会被取消。
+	 * 接受一个额外的信号，如果这个信号是一个 {@link Throwable} 并且默认的 {@link Hooks#onOperatorError(BiFunction) hook} 存在，
+	 * 那么它可以 be added as a suppressed(被封锁的) exception。
 	 *
 	 * @param subscription the linked operator parent {@link Subscription}
 	 * @param error the callback or operator error
 	 * @param dataSignal the value (onNext or onError) signal processed during failure
-	 * @param context a context that might hold a local error consumer
+	 * @param context a context that might hold a local error consumer (onOperatorErrorHook)
 	 * @return mapped {@link Throwable}
 	 *
 	 */
@@ -746,9 +758,9 @@ public abstract class Operators {
 
 		Throwable t = Exceptions.unwrap(error);
 		BiFunction<? super Throwable, Object, ? extends Throwable> hook =
-				context.getOrDefault(reactor.core.publisher.Hooks.KEY_ON_OPERATOR_ERROR, null);
+				context.getOrDefault(Hooks.KEY_ON_OPERATOR_ERROR, null);
 		if (hook == null) {
-			hook = reactor.core.publisher.Hooks.onOperatorErrorHook;
+			hook = Hooks.onOperatorErrorHook;
 		}
 		if (hook == null) {
 			if (dataSignal != null) {
@@ -756,8 +768,7 @@ public abstract class Operators {
 					t = Exceptions.addSuppressed(t, (Throwable) dataSignal);
 				}
 				//do not wrap original value to avoid strong references
-				/*else {
-				}*/
+				/*else {}*/
 			}
 			return t;
 		}
