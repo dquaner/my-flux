@@ -579,7 +579,7 @@ blockquote cite a, blockquote cite a:visited {
 }
 
 blockquote, blockquote p {
-    color: #ffffff;
+    color: #34302d;
 }
 
 /* Microformats */
@@ -3214,7 +3214,7 @@ programming language(s).
 </div>
 </div>
 <div class="paragraph">
-<p>As a first step in the direction of reactive programming [作为向反应式编程迈出的第一步], Microsoft created the Reactive
+<p>【发展过程】As a first step in the direction of reactive programming [作为向反应式编程迈出的第一步], Microsoft created the Reactive
 Extensions (Rx) library in the .NET ecosystem [生态系统]. Then RxJava implemented reactive
 programming on the JVM.  As time went on, a standardization for Java emerged [出现] through the
 Reactive Streams effort, a specification that defines a set of interfaces and
@@ -3222,24 +3222,24 @@ interaction rules for reactive libraries on the JVM. Its interfaces have been
 integrated into Java 9 under the <code>Flow</code> class.</p>
 </div>
 <div class="paragraph">
-<p>The reactive programming paradigm is often presented in object-oriented languages as an
+<p>【观察者模式 & 迭代器模式】The reactive programming paradigm is often presented in object-oriented languages as an
 extension of the Observer design pattern. You can also compare the main reactive streams
 pattern with the familiar Iterator design pattern, as there is a duality [二元性] to the
 <code>Iterable</code>-<code>Iterator</code> pair in all of these libraries. One major difference is that, while
 an Iterator is pull-based, reactive streams are push-based.</p>
 </div>
 <div class="paragraph">
-<p>Using an iterator is an imperative programming pattern, even though the method of
-accessing values is solely the responsibility of the <code>Iterable</code>. Indeed, it is up to the
+<p>【响应式的关键：推送和声明式操作】Using an iterator is an imperative programming [命令式编程] pattern, even though the method of
+accessing values is solely [完全] the responsibility of the <code>Iterable</code>. Indeed [实际上], it is up to the
 developer to choose when to access the <code>next()</code> item in the sequence. In reactive
 streams, the equivalent of the above pair is <code>Publisher-Subscriber</code>. But it is the
 <code>Publisher</code> that notifies the Subscriber of newly available values <em>as they come</em>, and
 this push aspect is the key to being reactive. Also, operations applied to pushed values
-are expressed declaratively rather than imperatively: The programmer expresses the logic
+are expressed declaratively rather than imperatively [对值的操作是声明式的而非命令式的]: The programmer expresses [表达] the logic
 of the computation rather than describing its exact control flow.</p>
 </div>
 <div class="paragraph">
-<p>In addition to pushing values, the error-handling and completion aspects are also covered
+<p>【处理异常和完成信号】In addition to pushing values, the error-handling and completion aspects are also covered
 in a well defined manner. A <code>Publisher</code> can push new values to its <code>Subscriber</code> (by
 calling <code>onNext</code>) but can also signal an error (by calling <code>onError</code>) or completion (by
 calling <code>onComplete</code>). Both errors and completion terminate the sequence. This can
@@ -3256,7 +3256,7 @@ be summed up as follows:</p>
 </div>
 <div class="paragraph">
 <p>This approach is very flexible. The pattern supports use cases where there is no value,
-one value, or n values (including an infinite sequence of values, such as the continuing
+one value, or n values (including an infinite [无限的] sequence of values, such as the continuing
 ticks of a clock).</p>
 </div>
 <div class="paragraph">
@@ -3275,10 +3275,10 @@ modern software is still a key concern.</p>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>parallelize</strong> to use more threads and more hardware resources.</p>
+<p><strong>parallelize【并行】</strong> to use more threads and more hardware resources.</p>
 </li>
 <li>
-<p><strong>seek more efficiency</strong> in how current resources are used.</p>
+<p><strong>seek more efficiency【寻求更高的效率】</strong> in how current resources are used.</p>
 </li>
 </ul>
 </div>
@@ -3286,23 +3286,23 @@ modern software is still a key concern.</p>
 <p>Usually, Java developers write programs by using blocking code. This practice
 is fine until there is a performance bottleneck. Then it is time
 to introduce additional threads, running similar blocking code. But this
-scaling in resource utilization can quickly introduce contention and concurrency
+scaling in resource utilization can quickly introduce contention and concurrency [竞争和并发]
 problems.</p>
 </div>
 <div class="paragraph">
 <p>Worse still, blocking wastes resources. If you look closely, as soon as a
 program involves some latency (notably I/O, such as a database request or a
 network call), resources are wasted because threads (possibly many threads)
-now sit idle, waiting for data.</p>
+now sit idle [空闲状态], waiting for data.</p>
 </div>
 <div class="paragraph">
-<p>So the parallelization approach is not a silver bullet. It is necessary
+<p>【并行方法并不是灵丹妙药】So the parallelization approach is not a silver bullet. It is necessary
 to access the full power of the hardware, but it is also complex to
-reason about and susceptible to resource wasting.</p>
+reason about and susceptible [容易造成] to resource wasting.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_asynchronicity_to_the_rescue"><a class="anchor" href="#_asynchronicity_to_the_rescue"></a>3.2. Asynchronicity to the Rescue?</h3>
+<h3 id="_asynchronicity_to_the_rescue"><a class="anchor" href="#_asynchronicity_to_the_rescue"></a>3.2. Asynchronicity to the Rescue[挽救]?</h3>
 <div class="paragraph">
 <p>The second approach mentioned earlier, seeking more efficiency, can be a solution
 to the resource wasting problem. By writing asynchronous, non-blocking code,
@@ -3311,7 +3311,7 @@ resources and later comes back to the current process when the asynchronous
 processing has finished.</p>
 </div>
 <div class="paragraph">
-<p>But how can you produce asynchronous code on the JVM? Java offers two models of
+<p>【两个 JVM 异步编程模型】But how can you produce asynchronous code on the JVM? Java offers two models of
 asynchronous programming:</p>
 </div>
 <div class="ulist">
@@ -3330,12 +3330,12 @@ instance, an <code>ExecutorService</code> running <code>Callable&lt;T&gt;</code>
 </ul>
 </div>
 <div class="paragraph">
-<p>Are these techniques good enough? Not for every use case, and both approaches have
+<p>【两种方案都有局限】Are these techniques good enough? Not for every use case, and both approaches have
 limitations.</p>
 </div>
 <div class="paragraph">
 <p>Callbacks are hard to compose together, quickly leading to code that is difficult to read
-and maintain (known as &#8220;Callback Hell&#8221;).</p>
+and maintain (known as &#8220;Callback Hell [回调地狱]&#8221;).</p>
 </div>
 <div class="paragraph">
 <p>Consider an example: showing the top five favorites from a user on the UI or suggestions
@@ -3487,7 +3487,7 @@ Consider its equivalent in Reactor:</p>
 </div>
 <div class="paragraph">
 <p>What if you want to ensure the favorite IDs are retrieved in less than 800ms or, if it
-takes longer, get them from a cache? In the callback-based code, that is a complicated
+takes longer, get them from a cache? In the callback-based code, that is a complicated [复杂的]
 task. In Reactor it becomes as easy as adding a <code>timeout</code> operator in the chain, as follows:</p>
 </div>
 <div class="exampleblock">
@@ -3524,21 +3524,21 @@ task. In Reactor it becomes as easy as adding a <code>timeout</code> operator in
 </div>
 </div>
 <div class="paragraph">
-<p><code>Future</code> objects are a bit better than callbacks, but they still do not do well at composition,
-despite the improvements brought in Java 8 by <code>CompletableFuture</code>. Orchestrating multiple
+<p><code>Future</code> objects are a bit better than callbacks, but they still do not do well at composition [组合],
+despite [尽管] the improvements brought in Java 8 by <code>CompletableFuture</code>. Orchestrating [编排] multiple
 <code>Future</code> objects together is doable but not easy. Also, <code>Future</code> has other problems:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>It is easy to end up with another blocking situation with <code>Future</code> objects by calling
+<p>【仍会发生阻塞情况】It is easy to end up with another blocking situation with <code>Future</code> objects by calling
 the <code>get()</code> method.</p>
 </li>
 <li>
-<p>They do not support lazy computation.</p>
+<p>【不支持延迟计算】They do not support lazy computation.</p>
 </li>
 <li>
-<p>They lack support for multiple values and advanced error handling.</p>
+<p>【不支持多值和异常处理】They lack support for multiple values and advanced error handling.</p>
 </li>
 </ul>
 </div>
@@ -3618,7 +3618,7 @@ when all tasks have completed.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="9"></i><b>9</b></td>
-<td>The tricky bit is that <code>allOf</code> returns <code>CompletableFuture&lt;Void&gt;</code>, so we
+<td>The tricky [棘手的] bit is that <code>allOf</code> returns <code>CompletableFuture&lt;Void&gt;</code>, so we
 reiterate over the list of futures, collecting their results by using <code>join()</code>
 (which, here, does not block, since <code>allOf</code> ensures the futures are all done).</td>
 </tr>
@@ -3707,15 +3707,15 @@ directly return the aggregated list of values.</td>
 </div>
 </div>
 <div class="paragraph">
-<p>The perils of using callbacks and <code>Future</code> objects are similar and are what reactive programming
-addresses with the <code>Publisher-Subscriber</code> pair.</p>
+<p>The perils [危险] of using callbacks and <code>Future</code> objects are similar and are what reactive programming
+addresses [解决] with the <code>Publisher-Subscriber</code> pair.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_from_imperative_to_reactive_programming"><a class="anchor" href="#_from_imperative_to_reactive_programming"></a>3.3. From Imperative to Reactive Programming</h3>
+<h3 id="_from_imperative_to_reactive_programming"><a class="anchor" href="#_from_imperative_to_reactive_programming"></a>3.3. From Imperative to Reactive Programming [从命令式编程到响应式编程]</h3>
 <div class="paragraph">
 <p>Reactive libraries, such as Reactor, aim to address these drawbacks of &#8220;classic&#8221;
-asynchronous approaches on the JVM while also focusing on a few additional aspects:</p>
+asynchronous approaches [解决“经典”异步方法的缺点] on the JVM while also focusing on a few additional aspects:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -3733,47 +3733,47 @@ asynchronous approaches on the JVM while also focusing on a few additional aspec
 emission is too high</em></p>
 </li>
 <li>
-<p><strong>High level</strong> but <strong>high value</strong> abstraction that is <em>concurrency-agnostic</em></p>
+<p><strong>High level</strong> but <strong>high value</strong> abstraction that is <em>concurrency-agnostic [与并发无关]</em></p>
 </li>
 </ul>
 </div>
 <div class="sect3">
 <h4 id="_composability_and_readability"><a class="anchor" href="#_composability_and_readability"></a>3.3.1. Composability and Readability</h4>
 <div class="paragraph">
-<p>By &#8220;composability&#8221;, we mean the ability to orchestrate multiple asynchronous tasks, in
+<p>【编排异步任务】By &#8220;composability&#8221;, we mean the ability to orchestrate multiple asynchronous tasks, in
 which we use results from previous tasks to feed input to subsequent ones.
 Alternatively, we can run several tasks in a fork-join style.
-In addition, we can reuse asynchronous tasks as discrete components in a
+In addition, we can reuse asynchronous tasks as discrete [分离的] components in a
 higher-level system.</p>
 </div>
 <div class="paragraph">
-<p>The ability to orchestrate tasks is tightly coupled to the readability and
+<p>【代码可读性和可维护性】The ability to orchestrate tasks is tightly coupled to the readability and
 maintainability of code. As the layers of asynchronous processes increase in both number
 and complexity, being able to compose and read code becomes increasingly difficult. As we
 saw, the callback model is simple, but one of its main drawbacks is that, for complex
 processes, you need to have a callback executed from a callback, itself nested inside
 another callback, and so on. That mess is known as &#8220;Callback Hell&#8221;. As you can guess (or
-know from experience), such code is pretty hard to go back to and reason about.</p>
+know from experience), such code is pretty hard to go back to and reason about [回溯和推理].</p>
 </div>
 <div class="paragraph">
-<p>Reactor offers rich composition options, wherein code mirrors the organization of the
+<p>Reactor offers rich composition options, wherein code mirrors [反映] the organization of the
 abstract process, and everything is generally kept at the same level (nesting is
 minimized).</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_the_assembly_line_analogy"><a class="anchor" href="#_the_assembly_line_analogy"></a>3.3.2. The Assembly Line Analogy</h4>
+<h4 id="_the_assembly_line_analogy"><a class="anchor" href="#_the_assembly_line_analogy"></a>3.3.2. The Assembly Line Analogy [类比成装配线]</h4>
 <div class="paragraph">
 <p>You can think of data processed by a reactive application as moving through an assembly
-line. Reactor is both the conveyor belt and the workstations. The raw material pours from
+line. Reactor is both the conveyor belt [传送带] and the workstations [工作站]. The raw material pours from
 a source (the original <code>Publisher</code>) and ends up as a finished product ready to be pushed
 to the consumer (or <code>Subscriber</code>).</p>
 </div>
 <div class="paragraph">
 <p>The raw material can go through various transformations and other intermediary steps or
 be part of a larger assembly line that aggregates intermediate pieces together. If there
-is a glitch or clogging at one point (perhaps boxing the products takes a
-disproportionately long time), the afflicted workstation can signal upstream to limit the
+is a glitch or clogging [故障或堵塞] at one point (perhaps boxing the products takes a
+disproportionately [相当地] long time), the afflicted [受影响的] workstation can signal upstream to limit the
 flow of raw material.</p>
 </div>
 </div>
@@ -3830,16 +3830,16 @@ in the assembly line analogy as a feedback signal sent up the line when a workst
 processes more slowly than an upstream workstation.</p>
 </div>
 <div class="paragraph">
-<p>The real mechanism defined by the Reactive Streams specification is pretty close to the
+<p>【无限发送模式或请求模式】The real mechanism defined by the Reactive Streams specification is pretty close to the
 analogy: A subscriber can work in <em>unbounded</em> mode and let the source push all the data
 at its fastest achievable rate or it can use the <code>request</code> mechanism to signal the source
 that it is ready to process at most <code>n</code> elements.</p>
 </div>
 <div class="paragraph">
-<p>Intermediate operators can also change the request in-transit. Imagine a <code>buffer</code>
+<p>Intermediate operators can also change the request in-transit [传输中的]. Imagine a <code>buffer</code>
 operator that groups elements in batches of ten. If the subscriber requests one buffer, it
 is acceptable for the source to produce ten elements. Some operators also implement
-<strong>prefetching</strong> strategies, which avoid <code>request(1)</code> round-trips and is beneficial
+<strong>prefetching [预取]</strong> strategies, which avoid <code>request(1)</code> round-trips and is beneficial
 if producing the elements before they are requested is not too costly.</p>
 </div>
 <div class="paragraph">
@@ -3851,7 +3851,7 @@ they get pushed by the upstream whenever they are produced.</p>
 <div class="sect3">
 <h4 id="reactive.hotCold"><a class="anchor" href="#reactive.hotCold"></a>3.3.6. Hot vs Cold</h4>
 <div class="paragraph">
-<p>The Rx family of reactive libraries distinguishes two broad categories of
+<p>【以响应式流如何响应订阅者分类】The Rx family of reactive libraries distinguishes two broad categories of
 reactive sequences: <strong>hot</strong> and <strong>cold</strong>. This distinction mainly has to do with how the
 reactive stream reacts to subscribers:</p>
 </div>
@@ -3862,11 +3862,11 @@ reactive stream reacts to subscribers:</p>
 For example, if the source wraps an HTTP call, a new HTTP request is made for each subscription.</p>
 </li>
 <li>
-<p>A <strong>Hot</strong> sequence does not start from scratch for each <code>Subscriber</code>. Rather, late
+<p>A <strong>Hot</strong> sequence does not start from scratch [从头开始] for each <code>Subscriber</code>. Rather, late
 subscribers receive signals emitted <em>after</em> they subscribed. Note, however, that some hot
 reactive streams can cache or replay the history of emissions totally or partially. From
 a general perspective, a hot sequence can even emit when no subscriber is listening (an
-exception to the &#8220;nothing happens before you subscribe&#8221; rule).</p>
+exception [例外] to the &#8220;nothing happens before you subscribe&#8221; rule).</p>
 </li>
 </ul>
 </div>
@@ -3887,17 +3887,17 @@ to "<a href="#intro-reactive">Introduction to Reactive Programming</a>"</p>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The Reactor project main artifact is <code>reactor-core</code>, a reactive library that focuses on
-the Reactive Streams specification and targets Java 8.</p>
+the Reactive Streams specification [规范] and targets Java 8.</p>
 </div>
 <div class="paragraph">
-<p>Reactor introduces composable reactive types that implement <code>Publisher</code> but also provide
+<p>Reactor introduces composable [可组合的] reactive types that implement <code>Publisher</code> but also provide
 a rich vocabulary of operators: <code>Flux</code> and <code>Mono</code>. A <code>Flux</code> object
 represents a reactive sequence of 0..N items, while a <code>Mono</code> object represents a
 single-value-or-empty (0..1) result.</p>
 </div>
 <div class="paragraph">
-<p>This distinction carries a bit of semantic information into the type, indicating the
-rough cardinality of the asynchronous processing. For instance, an HTTP request produces
+<p>This distinction [区别] carries a bit of semantic information into the type, indicating the
+rough cardinality [大概基数] of the asynchronous processing. For instance, an HTTP request produces
 only one response, so there is not much sense in doing a <code>count</code> operation. Expressing
 the result of such an HTTP call as a <code>Mono&lt;HttpResponse&gt;</code> thus makes more sense than
 expressing it as a <code>Flux&lt;HttpResponse&gt;</code>, as it offers only operators that are relevant to
@@ -3950,14 +3950,14 @@ with or without value), or only emits a single <code>onError</code> signal (fail
 </div>
 <div class="paragraph">
 <p>Most <code>Mono</code> implementations are expected to immediately call <code>onComplete</code> on their
-<code>Subscriber</code> after having called <code>onNext</code>. <code>Mono.never()</code> is an outlier: it doesn&#8217;t
+<code>Subscriber</code> after having called <code>onNext</code>. <code>Mono.never()</code> is an outlier [额外情况]: it doesn&#8217;t
 emit any signal, which is not technically forbidden although not terribly useful outside
-of tests. On the other hand, a combination of <code>onNext</code> and <code>onError</code> is explicitly forbidden.</p>
+of tests. On the other hand, a combination of <code>onNext</code> and <code>onError</code> is explicitly forbidden [明确禁止].</p>
 </div>
 <div class="paragraph">
 <p><code>Mono</code> offers only a subset of the operators that are available for a <code>Flux</code>, and
-some operators (notably those that combine the <code>Mono</code> with another <code>Publisher</code>)
-switch to a <code>Flux</code>.
+some operators (notably [特别是] those that combine the <code>Mono</code> with another <code>Publisher</code>)
+switch to [切换到] a <code>Flux</code>.
 For example, <code>Mono#concatWith(Publisher)</code> returns a <code>Flux</code> while <code>Mono#then(Mono)</code>
 returns another <code>Mono</code>.</p>
 </div>
@@ -10056,7 +10056,7 @@ an asynchronous sequence of data, and nothing happens before you subscribe.</p>
 <p>Really, though, there are two broad families of publishers: hot and cold.</p>
 </div>
 <div class="paragraph">
-<p>The earlier description applies to the cold family of publishers. They generate data anew
+<p>【Clod publishers 为订阅者重新生成数据】The earlier description applies to the cold family of publishers. They generate data anew
 for each subscription. If no subscription is created, data never gets generated.</p>
 </div>
 <div class="paragraph">
@@ -10064,20 +10064,20 @@ for each subscription. If no subscription is created, data never gets generated.
 made if no one is interested in the result.</p>
 </div>
 <div class="paragraph">
-<p>Hot publishers, on the other hand, do not depend on any number of subscribers. They
+<p>【Hot publishers 立即开始发布数据，不在意订阅者的数量】Hot publishers, on the other hand, do not depend on any number of subscribers. They
 might start publishing data right away and would continue doing so whenever a new
 <code>Subscriber</code> comes in (in which case, the subscriber would see only new elements emitted
 <em>after</em> it subscribed). For hot publishers, <em>something</em> does indeed happen before you
 subscribe.</p>
 </div>
 <div class="paragraph">
-<p>One example of the few hot operators in Reactor is <code>just</code>: It directly captures the value
+<p>【Hot operator: just】One example of the few hot operators in Reactor is <code>just</code>: It directly captures the value
 at assembly time and replays it to anybody subscribing to it later. To re-use the HTTP
 call analogy, if the captured data is the result of an HTTP call, then only one network
-call is made, when instantiating <code>just</code>.</p>
+call is made, when instantiating [实例化] <code>just</code>.</p>
 </div>
 <div class="paragraph">
-<p>To transform <code>just</code> into a cold publisher, you can use <code>defer</code>. It defers the HTTP
+<p>To transform <code>just</code> into a cold publisher, you can use <code>defer</code>. It defers [推迟] the HTTP
 request in our example to subscription time (and would result in a separate network call
 for each new subscription).</p>
 </div>
@@ -10128,7 +10128,7 @@ Subscriber 2: PURPLE</pre>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/gs-cold.png" alt="Replaying behavior">
+<img src="./images/gs-cold.png" alt="Replaying behavior">
 </div>
 </div>
 <div class="paragraph">
@@ -10196,14 +10196,14 @@ Subscriber 2 to Hot Source: PURPLE</pre>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/gs-hot.png" alt="Broadcasting a subscription">
+<img src="./images/gs-hot.png" alt="Broadcasting a subscription">
 </div>
 </div>
 <div class="paragraph">
 <p>Subscriber 1 catches all four colors. Subscriber 2, having been created after the first
 two colors were produced, catches only the last two colors. This difference accounts for
 the doubling of <code>ORANGE</code> and <code>PURPLE</code> in the output. The process described by the
-operators on this Flux runs regardless of when subscriptions have been attached.</p>
+operators on this Flux runs regardless [无论] of when subscriptions have been attached.</p>
 </div>
 </div>
 <div class="sect2">
@@ -13196,9 +13196,9 @@ further operators are defined after the <code>subscribeOn</code> wrapper.</p>
 operators you think should have been applied to it.</p>
 </div>
 <div class="paragraph">
-<p>Reactor operators are decorators. They return a different instance that wraps
+<p>Reactor operators are decorators [装饰器]. They return a different instance that wraps
 the source sequence and add behavior. That is why the preferred way of using
-operators is to <em>chain</em> the calls.</p>
+operators is to <em>chain</em> the calls [使用算子的首选方式是链式调用].</p>
 </div>
 <div class="paragraph">
 <p>Compare the following two examples:</p>
