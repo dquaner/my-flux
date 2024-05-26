@@ -4279,7 +4279,7 @@ can be <em>cancelled</em>, by calling its <code>dispose()</code> method.</p>
 <p>For a <code>Flux</code> or <code>Mono</code>, cancellation is a signal that the source should stop
 producing elements. However, it is NOT guaranteed to be immediate: Some sources
 might produce elements so fast that they could complete even before receiving the
-cancel instruction.</p>
+cancel instruction [指令].</p>
 </div>
 <div class="paragraph">
 <p>Some utilities around <code>Disposable</code> are available in the <code>Disposables</code> class.
@@ -4300,8 +4300,8 @@ another <code>Disposable</code> immediately disposes it.</p>
 <div class="sect3">
 <h4 id="_an_alternative_to_lambdas_basesubscriber"><a class="anchor" href="#_an_alternative_to_lambdas_basesubscriber"></a>4.3.3. An Alternative to Lambdas: <code>BaseSubscriber</code></h4>
 <div class="paragraph">
-<p>There is an additional <code>subscribe</code> method that is more generic and takes a full-blown
-<code>Subscriber</code> rather than composing one out of lambdas. In order to help with writing
+<p>There is an additional <code>subscribe</code> method that is more generic and takes a full-blown [成熟的] 
+<code>Subscriber</code> rather than composing one out of lambdas [用 lambdas 组合一个]. In order to help with writing
 such a <code>Subscriber</code>, we provide an extendable class called <code>BaseSubscriber</code>.</p>
 </div>
 <div class="admonitionblock warning">
@@ -4314,7 +4314,7 @@ such a <code>Subscriber</code>, we provide an extendable class called <code>Base
 Instances of <code>BaseSubscriber</code> (or subclasses of it) are <strong>single-use</strong>,
 meaning that a <code>BaseSubscriber</code> cancels its subscription to the first <code>Publisher</code> if it
 is subscribed to a second <code>Publisher</code>.
-That is because using an instance twice would violate the Reactive Streams rule that
+That is because using an instance twice would violate [违反] the Reactive Streams rule that
 the <code>onNext</code> method of a <code>Subscriber</code> must not be called in parallel.
 As a result, anonymous implementations are fine only if they are declared directly within
 the call to <code>Publisher#subscribe(Subscriber)</code>.
@@ -4429,15 +4429,17 @@ bounded requests</em>.
 <div class="paragraph">
 <p>When implementing backpressure in Reactor, the way consumer pressure is propagated back to the source is by sending a <code>request</code> to the upstream operator.
 The sum of current requests is sometimes referenced to as the current &#8220;demand&#8221;, or &#8220;pending request&#8221;.
-Demand is capped at <code>Long.MAX_VALUE</code>, representing an unbounded request (meaning &#8220;produce as fast as you can&#8221;&#8201;&#8212;&#8201;basically disabling backpressure).</p>
+Demand is capped [封顶的] at <code>Long.MAX_VALUE</code>, representing an unbounded request (meaning &#8220;produce as fast as you can&#8221;&#8201;&#8212;&#8201;basically disabling backpressure).</p>
 </div>
 <div class="paragraph">
-<p>The first request comes from the final subscriber at subscription time, yet the most direct ways of subscribing all immediately trigger an unbounded request of <code>Long.MAX_VALUE</code>:</p>
+<p>The first request comes from the final subscriber at subscription time, yet the most direct ways of subscribing all immediately trigger an unbounded request of <code>Long.MAX_VALUE</code>:
+<br>第一个请求来自最终的 subscriber 订阅时，但大部分最直接的订阅方法都直接触发一个 <code>Long.MAX_VALUE</code> 无限请求：
+</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><code>subscribe()</code> and most of its lambda-based variants (to the exception of the one that has a <code>Consumer&lt;Subscription&gt;</code>)</p>
+<p><code>subscribe()</code> and most of its lambda-based variants (to the exception of [除...以外] the one that has a <code>Consumer&lt;Subscription&gt;</code>)</p>
 </li>
 <li>
 <p><code>block()</code>, <code>blockFirst()</code> and <code>blockLast()</code></p>
@@ -4454,7 +4456,7 @@ Demand is capped at <code>Long.MAX_VALUE</code>, representing an unbounded reque
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flux.range(1, 10)
+<pre class="highlightjs highlight"><code class="-jlanguageava hljs" data-lang="java">Flux.range(1, 10)
     .doOnRequest(r -&gt; System.out.println("request of " + r))
     .subscribe(new BaseSubscriber&lt;Integer&gt;() {
 
@@ -4493,8 +4495,8 @@ Cancelling after having received 1</code></pre>
 <i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-When manipulating a request, you must be careful to produce enough demand for
-the sequence to advance, or your Flux can get &#8220;stuck&#8221;. That is why <code>BaseSubscriber</code>
+When manipulating [操作] a request, you must be careful to produce enough demand for
+the sequence to advance [前进], or your Flux can get &#8220;stuck[卡住]&#8221;. That is why <code>BaseSubscriber</code>
 defaults to an unbounded request in <code>hookOnSubscribe</code>. When overriding this hook, you should usually
 call <code>request</code> at least once.
 </td>
@@ -4502,35 +4504,41 @@ call <code>request</code> at least once.
 </table>
 </div>
 <div class="sect4">
-<h5 id="_operators_that_change_the_demand_from_downstream"><a class="anchor" href="#_operators_that_change_the_demand_from_downstream"></a>Operators that Change the Demand from Downstream</h5>
+<h5 id="_operators_that_change_the_demand_from_downstream"><a class="anchor" href="#_operators_that_change_the_demand_from_downstream"></a>Operators that Change the Demand from Downstream<br/>【可以更改下游请求数的算子】</h5>
 <div class="paragraph">
-<p>One thing to keep in mind is that demand expressed at the subscribe level <strong>can</strong> be reshaped by each operator in the upstream chain.
-A textbook case is the <code>buffer(N)</code> operator: If it receives a <code>request(2)</code>, it is interpreted as a demand for <strong>two full buffers</strong>.
-As a consequence, since buffers need <code>N</code> elements to be considered full, the <code>buffer</code> operator reshapes the request to <code>2 x N</code>.</p>
+<p>【buffer 算子】<br/>One thing to keep in mind is that demand expressed [表达的] at the subscribe level <strong>can</strong> be reshaped by each operator in the upstream chain.
+A textbook case [典型的例子] is the <code>buffer(N)</code> operator: If it receives a <code>request(2)</code>, it is interpreted [解释] as a demand for <strong>two full buffers</strong>.
+As a consequence [因此], since buffers need <code>N</code> elements to be considered full, the <code>buffer</code> operator reshapes the request to <code>2 x N</code>.</p>
 </div>
 <div class="paragraph">
-<p>You might also have noticed that some operators have variants that take an <code>int</code> input parameter called <code>prefetch</code>.
+<p>【以 prefetch 作为输入参数的算子】<br/>You might also have noticed that some operators have variants that take an <code>int</code> input parameter called <code>prefetch</code>.
 This is another category of operators that modify the downstream request.
-These are usually operators that deal with inner sequences, deriving a <code>Publisher</code> from each incoming element (like <code>flatMap</code>).</p>
+These are usually operators that deal with inner sequences, deriving [衍生] a <code>Publisher</code> from each incoming element (like <code>flatMap</code>).
+</p>
 </div>
 <div class="paragraph">
-<p><strong>Prefetch</strong> is a way to tune the initial request made on these inner sequences.
-If unspecified, most of these operators start with a demand of <code>32</code>.</p>
+<p>
+<strong>Prefetch</strong> is a way to tune the initial request made on these inner sequences.
+If unspecified, most of these operators start with a demand of <code>32</code>.
+</p>
 </div>
 <div class="paragraph">
-<p>These operators usually also implement a <strong>replenishing optimization</strong>: Once the operator has seen 75% of the prefetch request fulfilled, it re-requests 75% from upstream.
-This is a heuristic optimization made so that these operators proactively anticipate the upcoming requests.</p>
+<p>
+These operators usually also implement a <strong>replenishing optimization [补充优化]</strong>: Once the operator has seen 75% of the prefetch request fulfilled, it re-requests 75% from upstream.
+This is a heuristic [启发式] optimization made so that these operators proactively [主动地] anticipate [预见（并做准备）] the upcoming requests.
+</p>
 </div>
 <div class="paragraph">
-<p>Finally, a couple of operators let you directly tune the request: <code>limitRate</code> and <code>limitRequest</code>.</p>
+<p>【limitRate 和 limitRequest 算子】<br/>
+Finally, a couple of operators let you directly tune the request: <code>limitRate</code> and <code>limitRequest</code>.</p>
 </div>
 <div class="paragraph">
 <p><code>limitRate(N)</code> splits the downstream requests so that they are propagated upstream in smaller batches.
-For instance, a request of <code>100</code> made to <code>limitRate(10)</code> would result in, at most, <code>10</code> requests of <code>10</code> being propagated to the upstream.
-Note that, in this form, <code>limitRate</code> actually implements the replenishing optimization discussed earlier.</p>
+For instance, a request of <code>100</code> made to <code>limitRate(10)</code> would result in, at most, <code>10</code> requests of <code>10</code> being propagated to the upstream [导致请求10个10个的传到上游].
+Note that, in this form, <code>limitRate</code> actually implements the replenishing [补充] optimization discussed earlier.</p>
 </div>
 <div class="paragraph">
-<p>The operator has a variant that also lets you tune the replenishing amount (referred to as the <code>lowTide</code> in the variant): <code>limitRate(highTide, lowTide)</code>.
+<p>The operator has a variant that also lets you tune the replenishing amount [补充量] (referred to as the [在变体中称为] <code>lowTide</code> in the variant): <code>limitRate(highTide, lowTide)</code>.
 Choosing a <code>lowTide</code> of <code>0</code> results in <strong>strict</strong> batches of <code>highTide</code> requests, instead of batches further reworked by the replenishing strategy.</p>
 </div>
 <div class="paragraph">
@@ -4633,7 +4641,7 @@ sequence terminated in this one).</td>
 </div>
 </div>
 <div class="paragraph">
-<p>You can also use a mutable <code>&lt;S&gt;</code>. The example above could for instance be
+<p>You can also use a mutable [可变的] <code>&lt;S&gt;</code>. The example above could for instance be
 rewritten using a single <code>AtomicLong</code> as the state, mutating it on each round:</p>
 </div>
 <div class="exampleblock">
@@ -4737,7 +4745,7 @@ suitable for multiple emissions per round, even from multiple threads.</p>
 </div>
 <div class="paragraph">
 <p>It exposes a <code>FluxSink</code>, with its <code>next</code>, <code>error</code>, and <code>complete</code> methods.
-Contrary to <code>generate</code>, it doesn&#8217;t have a state-based variant. On the other
+Contrary [相反] to <code>generate</code>, it doesn&#8217;t have a state-based variant. On the other
 hand, it can trigger multi-threaded events in the callback.</p>
 </div>
 <div class="admonitionblock tip">
@@ -4762,10 +4770,10 @@ world - such as an asynchronous API based on listeners.
 <td class="content">
 <code>create</code> <strong>doesn&#8217;t parallelize your code nor does it make it asynchronous</strong>, even
 though it <em>can</em> be used with asynchronous APIs. If you block within the <code>create</code> lambda,
-you expose yourself to deadlocks and similar side effects. Even with the use of <code>subscribeOn</code>,
-there&#8217;s the caveat that a long-blocking <code>create</code> lambda (such as an infinite loop calling
+you expose yourself to deadlocks and similar side effects [死锁以及类似于死锁的副作用]. Even with the use of <code>subscribeOn</code>,
+there&#8217;s the caveat [警告] that a long-blocking <code>create</code> lambda (such as an infinite loop calling
 <code>sink.next(t)</code>) can lock the pipeline: the requests would never be performed due to the
-loop starving the same thread they are supposed to run from. Use the <code>subscribeOn(Scheduler, false)</code>
+loop starving [占用了] the same thread they are supposed to run from. Use the <code>subscribeOn(Scheduler, false)</code>
 variant: <code>requestOnSeparateThread = false</code> will use the <code>Scheduler</code> thread for the <code>create</code>
 and still let data flow by performing <code>request</code> in the original thread.
 </td>
