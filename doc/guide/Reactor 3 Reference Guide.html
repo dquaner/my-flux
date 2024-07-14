@@ -2360,11 +2360,11 @@ please <a href="https://github.com/reactor/.github/blob/main/CONTRIBUTING.md">ge
 <a href="#intro-reactive">Introduction to Reactive Programming</a>.</p>
 </li>
 <li>
-<p>If you are familiar with Reactor concepts and are just looking for the right tool
+<p>【选择算子】If you are familiar with Reactor concepts and are just looking for the right tool
 for the job but cannot think of a relevant operator, try the <a href="#which-operator">Which operator do I need?</a> Appendix.</p>
 </li>
 <li>
-<p>In order to dig deeper into the core features of Reactor, head to <a href="#core-features">Reactor Core Features</a> to
+<p>【核心特性】In order to dig deeper into the core features of Reactor, head to <a href="#core-features">Reactor Core Features</a> to
 learn:</p>
 <div class="ulist">
 <ul>
@@ -2382,10 +2382,10 @@ sections.</p>
 </div>
 </li>
 <li>
-<p>Unit testing? Yes it is possible with the <code>reactor-test</code> project! See <a href="#testing">Testing</a>.</p>
+<p>【单元测试】Unit testing? Yes it is possible with the <code>reactor-test</code> project! See <a href="#testing">Testing</a>.</p>
 </li>
 <li>
-<p><a href="#producing">Programmatically creating a sequence</a> offers a more advanced way of creating reactive sources.</p>
+<p>【更高级的创建方法】<a href="#producing">Programmatically creating a sequence</a> offers a more advanced way of creating reactive sources.</p>
 </li>
 <li>
 <p>Other advanced topics are covered in <a href="#advanced">Advanced Features and Concepts</a>.</p>
@@ -3720,7 +3720,7 @@ asynchronous approaches [解决“经典”异步方法的缺点] on the JVM whi
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Composability</strong> and <strong>readability</strong></p>
+<p><strong>Composability [可组合性]</strong> and <strong>readability</strong></p>
 </li>
 <li>
 <p>Data as a <strong>flow</strong> manipulated with a rich vocabulary of <strong>operators</strong></p>
@@ -3740,14 +3740,14 @@ emission is too high</em></p>
 <div class="sect3">
 <h4 id="_composability_and_readability"><a class="anchor" href="#_composability_and_readability"></a>3.3.1. Composability and Readability</h4>
 <div class="paragraph">
-<p>【编排异步任务】By &#8220;composability&#8221;, we mean the ability to orchestrate multiple asynchronous tasks, in
+<p>【可组合性是指编排多个异步任务的能力】By &#8220;composability&#8221;, we mean the ability to orchestrate multiple asynchronous tasks, in
 which we use results from previous tasks to feed input to subsequent ones.
 Alternatively, we can run several tasks in a fork-join style.
 In addition, we can reuse asynchronous tasks as discrete [分离的] components in a
 higher-level system.</p>
 </div>
 <div class="paragraph">
-<p>【代码可读性和可维护性】The ability to orchestrate tasks is tightly coupled to the readability and
+<p>【可组合性同时有益于代码可读性和可维护性】The ability to orchestrate tasks is tightly coupled to the readability and
 maintainability of code. As the layers of asynchronous processes increase in both number
 and complexity, being able to compose and read code becomes increasingly difficult. As we
 saw, the callback model is simple, but one of its main drawbacks is that, for complex
@@ -3770,7 +3770,7 @@ a source (the original <code>Publisher</code>) and ends up as a finished product
 to the consumer (or <code>Subscriber</code>).</p>
 </div>
 <div class="paragraph">
-<p>The raw material can go through various transformations and other intermediary steps or
+<p>The raw material can go through various transformations and other intermediary [中间的 ] steps or
 be part of a larger assembly line that aggregates intermediate pieces together. If there
 is a glitch or clogging [故障或堵塞] at one point (perhaps boxing the products takes a
 disproportionately [相当地] long time), the afflicted [受影响的] workstation can signal upstream to limit the
@@ -3780,12 +3780,12 @@ flow of raw material.</p>
 <div class="sect3">
 <h4 id="_operators"><a class="anchor" href="#_operators"></a>3.3.3. Operators</h4>
 <div class="paragraph">
-<p>In Reactor, operators are the workstations in our assembly analogy. Each operator adds
+<p>【将算子类比成装配线上的工作站】In Reactor, operators are the workstations in our assembly analogy. Each operator adds
 behavior to a <code>Publisher</code> and wraps the previous step&#8217;s <code>Publisher</code> into a new instance.
 The whole chain is thus linked, such that data originates from the first <code>Publisher</code> and
 moves down the chain, transformed by each link. Eventually, a <code>Subscriber</code> finishes the
 process. Remember that nothing happens until a <code>Subscriber</code> subscribes to a <code>Publisher</code>,
-as we will see shortly.</p>
+as we will see shortly [不久].</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -3794,7 +3794,7 @@ as we will see shortly.</p>
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Understanding that operators create new instances can help you avoid a common
+【每个算子都会创建一个新的Publisher实例】Understanding that operators create new instances can help you avoid a common
 mistake that would lead you to believe that an operator you used in your chain is not
 being applied. See this <a href="#faq.chain">item</a> in the FAQ.
 </td>
@@ -3802,7 +3802,7 @@ being applied. See this <a href="#faq.chain">item</a> in the FAQ.
 </table>
 </div>
 <div class="paragraph">
-<p>While the Reactive Streams specification does not specify operators at all, one of the
+<p>【提供了丰富的算子是Reactor最大的附加价值之一】While the Reactive Streams specification does not specify operators at all, one of the
 best added values of reactive libraries, such as Reactor, is the rich vocabulary of
 operators that they provide. These cover a lot of ground, from simple transformation and
 filtering to complex orchestration and error handling.</p>
@@ -3811,12 +3811,12 @@ filtering to complex orchestration and error handling.</p>
 <div class="sect3">
 <h4 id="reactive.subscribe"><a class="anchor" href="#reactive.subscribe"></a>3.3.4. Nothing Happens Until You <code>subscribe()</code></h4>
 <div class="paragraph">
-<p>In Reactor, when you write a <code>Publisher</code> chain, data does not start pumping into it by
+<p>【Publisher链提供异步处理的抽象描述】In Reactor, when you write a <code>Publisher</code> chain, data does not start pumping into it by
 default. Instead, you create an abstract description of your asynchronous process (which
 can help with reusability and composition).</p>
 </div>
 <div class="paragraph">
-<p>By the act of <strong>subscribing</strong>, you tie the <code>Publisher</code> to a <code>Subscriber</code>, which triggers
+<p>【Subscriber订阅触发数据流动】By the act of <strong>subscribing</strong>, you tie the <code>Publisher</code> to a <code>Subscriber</code>, which triggers
 the flow of data in the whole chain. This is achieved internally by a single <code>request</code>
 signal from the <code>Subscriber</code> that is propagated upstream, all the way back to the source
 <code>Publisher</code>.</p>
@@ -3825,7 +3825,7 @@ signal from the <code>Subscriber</code> that is propagated upstream, all the way
 <div class="sect3">
 <h4 id="reactive.backpressure"><a class="anchor" href="#reactive.backpressure"></a>3.3.5. Backpressure</h4>
 <div class="paragraph">
-<p>Propagating signals upstream is also used to implement <strong>backpressure</strong>, which we described
+<p>【向上游传递信号也用于实现背压机制】Propagating signals upstream is also used to implement <strong>backpressure</strong>, which we described
 in the assembly line analogy as a feedback signal sent up the line when a workstation
 processes more slowly than an upstream workstation.</p>
 </div>
@@ -3836,14 +3836,14 @@ at its fastest achievable rate or it can use the <code>request</code> mechanism 
 that it is ready to process at most <code>n</code> elements.</p>
 </div>
 <div class="paragraph">
-<p>Intermediate operators can also change the request in-transit [传输中的]. Imagine a <code>buffer</code>
+<p>【算子可以更改请求数】Intermediate operators can also change the request in-transit [传输中的]. Imagine a <code>buffer</code>
 operator that groups elements in batches of ten. If the subscriber requests one buffer, it
-is acceptable for the source to produce ten elements. Some operators also implement
+is acceptable for the source to produce ten elements. 【预取避免了request(1)的反复执行，在请求之前生成元素成本不高时受益】Some operators also implement
 <strong>prefetching [预取]</strong> strategies, which avoid <code>request(1)</code> round-trips and is beneficial
 if producing the elements before they are requested is not too costly.</p>
 </div>
 <div class="paragraph">
-<p>This transforms the push model into a <strong>push-pull hybrid</strong>, where the downstream can pull n
+<p>【背压机制是一种push-pull混合模式】This transforms the push model into a <strong>push-pull hybrid</strong>, where the downstream can pull n
 elements from upstream if they are readily available. But if the elements are not ready,
 they get pushed by the upstream whenever they are produced.</p>
 </div>
@@ -3851,18 +3851,18 @@ they get pushed by the upstream whenever they are produced.</p>
 <div class="sect3">
 <h4 id="reactive.hotCold"><a class="anchor" href="#reactive.hotCold"></a>3.3.6. Hot vs Cold</h4>
 <div class="paragraph">
-<p>【以响应式流如何响应订阅者分类】The Rx family of reactive libraries distinguishes two broad categories of
+<p>【根据流如何响应订阅者分类】The Rx family of reactive libraries distinguishes two broad categories of
 reactive sequences: <strong>hot</strong> and <strong>cold</strong>. This distinction mainly has to do with how the
 reactive stream reacts to subscribers:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>A <strong>Cold</strong> sequence starts anew for each <code>Subscriber</code>, including at the source of data.
+<p>【Cold序列为每个订阅者从数据源开始重新生成】A <strong>Cold</strong> sequence starts anew for each <code>Subscriber</code>, including at the source of data.
 For example, if the source wraps an HTTP call, a new HTTP request is made for each subscription.</p>
 </li>
 <li>
-<p>A <strong>Hot</strong> sequence does not start from scratch [从头开始] for each <code>Subscriber</code>. Rather, late
+<p>【Hot序列的订阅者收到它们订阅后产生的信号】A <strong>Hot</strong> sequence does not start from scratch [从头开始] for each <code>Subscriber</code>. Rather, late
 subscribers receive signals emitted <em>after</em> they subscribed. Note, however, that some hot
 reactive streams can cache or replay the history of emissions totally or partially. From
 a general perspective, a hot sequence can even emit when no subscriber is listening (an
@@ -3886,17 +3886,17 @@ to "<a href="#intro-reactive">Introduction to Reactive Programming</a>"</p>
 <h2 id="core-features"><a class="anchor" href="#core-features"></a>4. Reactor Core Features</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The Reactor project main artifact is <code>reactor-core</code>, a reactive library that focuses on
+<p>【主要组件: reactor-core】The Reactor project main artifact is <code>reactor-core</code>, a reactive library that focuses on
 the Reactive Streams specification [规范] and targets Java 8.</p>
 </div>
 <div class="paragraph">
-<p>Reactor introduces composable [可组合的] reactive types that implement <code>Publisher</code> but also provide
+<p>【提供实现了Publisher的反应式类以及丰富的算子】Reactor introduces composable [可组合的] reactive types that implement <code>Publisher</code> but also provide
 a rich vocabulary of operators: <code>Flux</code> and <code>Mono</code>. A <code>Flux</code> object
 represents a reactive sequence of 0..N items, while a <code>Mono</code> object represents a
 single-value-or-empty (0..1) result.</p>
 </div>
 <div class="paragraph">
-<p>This distinction [区别] carries a bit of semantic information into the type, indicating the
+<p>【Flux/Mono类型区分异步处理的大概基数】This distinction [区别] carries a bit of semantic information into the type, indicating the
 rough cardinality [大概基数] of the asynchronous processing. For instance, an HTTP request produces
 only one response, so there is not much sense in doing a <code>count</code> operation. Expressing
 the result of such an HTTP call as a <code>Mono&lt;HttpResponse&gt;</code> thus makes more sense than
@@ -3904,7 +3904,7 @@ expressing it as a <code>Flux&lt;HttpResponse&gt;</code>, as it offers only oper
 a context of zero items or one item.</p>
 </div>
 <div class="paragraph">
-<p>Operators that change the maximum cardinality of the processing also switch to the
+<p>【更改处理最大基数的算子也会带来相关类型的切换】Operators that change the maximum cardinality of the processing also switch to the
 relevant type. For instance, the <code>count</code> operator exists in <code>Flux</code>, but it returns a
 <code>Mono&lt;Long&gt;</code>.</p>
 </div>
@@ -3919,13 +3919,13 @@ relevant type. For instance, the <code>count</code> operator exists in <code>Flu
 </div>
 </div>
 <div class="paragraph">
-<p>A <code>Flux&lt;T&gt;</code> is a standard <code>Publisher&lt;T&gt;</code> that represents an asynchronous sequence of 0 to N
+<p>【Flux表示可能会发送0...N个元素的异步序列，以一个完成或错误信号标示序列终止】A <code>Flux&lt;T&gt;</code> is a standard <code>Publisher&lt;T&gt;</code> that represents an asynchronous sequence of 0 to N
 emitted items, optionally terminated by either a completion signal or an error.
 As in the Reactive Streams spec, these three types of signal translate to calls to a downstream
 Subscriber&#8217;s <code>onNext</code>, <code>onComplete</code>, and <code>onError</code> methods.</p>
 </div>
 <div class="paragraph">
-<p>With this large scope of possible signals, <code>Flux</code> is the general-purpose reactive type.
+<p>【Flux是通用的反应类型】With this large scope of possible signals, <code>Flux</code> is the general-purpose reactive type.
 Note that all events, even terminating ones, are optional: no <code>onNext</code> event but an
 <code>onComplete</code> event represents an <em>empty</em> finite sequence, but remove the <code>onComplete</code> and
 you have an <em>infinite</em> empty sequence (not particularly useful, except for tests around cancellation).
@@ -3944,25 +3944,25 @@ produces a <code>Flux&lt;Long&gt;</code> that is infinite and emits regular tick
 </div>
 </div>
 <div class="paragraph">
-<p>A <code>Mono&lt;T&gt;</code> is a specialized <code>Publisher&lt;T&gt;</code> that emits at most one item <em>via</em> the
+<p>【Mono是一种特殊的Publisher，发送0...1个元素】A <code>Mono&lt;T&gt;</code> is a specialized <code>Publisher&lt;T&gt;</code> that emits at most one item <em>via</em> the
 <code>onNext</code> signal then terminates with an <code>onComplete</code> signal (successful <code>Mono</code>,
 with or without value), or only emits a single <code>onError</code> signal (failed <code>Mono</code>).</p>
 </div>
 <div class="paragraph">
-<p>Most <code>Mono</code> implementations are expected to immediately call <code>onComplete</code> on their
+<p>【大部分Mono在发送数据后直接发送一个完成信号，Mono.never()是额外的情况】Most <code>Mono</code> implementations are expected to immediately call <code>onComplete</code> on their
 <code>Subscriber</code> after having called <code>onNext</code>. <code>Mono.never()</code> is an outlier [额外情况]: it doesn&#8217;t
 emit any signal, which is not technically forbidden although not terribly useful outside
 of tests. On the other hand, a combination of <code>onNext</code> and <code>onError</code> is explicitly forbidden [明确禁止].</p>
 </div>
 <div class="paragraph">
-<p><code>Mono</code> offers only a subset of the operators that are available for a <code>Flux</code>, and
+<p>【Mono提供的算子是Flux算子的子集，有些算子可能会将Mono转换成Flux】<code>Mono</code> offers only a subset of the operators that are available for a <code>Flux</code>, and
 some operators (notably [特别是] those that combine the <code>Mono</code> with another <code>Publisher</code>)
 switch to [切换到] a <code>Flux</code>.
 For example, <code>Mono#concatWith(Publisher)</code> returns a <code>Flux</code> while <code>Mono#then(Mono)</code>
 returns another <code>Mono</code>.</p>
 </div>
 <div class="paragraph">
-<p>Note that you can use a <code>Mono</code> to represent no-value asynchronous processes that only
+<p>【可以使用直接发送完成信号的Mono表示一个无值的异步处理，这种Mono类似于Runnable】Note that you can use a <code>Mono</code> to represent no-value asynchronous processes that only
 have the concept of completion (similar to a <code>Runnable</code>). To create one, you can use an empty
 <code>Mono&lt;Void&gt;</code>.</p>
 </div>
@@ -3970,11 +3970,11 @@ have the concept of completion (similar to a <code>Runnable</code>). To create o
 <div class="sect2">
 <h3 id="_simple_ways_to_create_a_flux_or_mono_and_subscribe_to_it"><a class="anchor" href="#_simple_ways_to_create_a_flux_or_mono_and_subscribe_to_it"></a>4.3. Simple Ways to Create a Flux or Mono and Subscribe to It</h3>
 <div class="paragraph">
-<p>The easiest way to get started with <code>Flux</code> and <code>Mono</code> is to use one of the numerous
+<p>【最简单的方式是使用它们各自的众多工厂方法之一】The easiest way to get started with <code>Flux</code> and <code>Mono</code> is to use one of the numerous
 factory methods found in their respective classes.</p>
 </div>
 <div class="paragraph">
-<p>For instance, to create a sequence of <code>String</code>, you can either enumerate them or put them
+<p>【例如，枚举元素或把元素放在一个Collection里】For instance, to create a sequence of <code>String</code>, you can either enumerate them or put them
 in a collection and create the Flux from it, as follows:</p>
 </div>
 <div class="exampleblock">
@@ -3990,7 +3990,7 @@ Flux&lt;String&gt; seq2 = Flux.fromIterable(iterable);</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Other examples of factory methods include the following:</p>
+<p>【其他工厂方法示例】Other examples of factory methods include the following:</p>
 </div>
 <div class="exampleblock">
 <div class="content">
@@ -4019,7 +4019,7 @@ number of items to produce.</td>
 </div>
 </div>
 <div class="paragraph">
-<p>When it comes to subscribing, <code>Flux</code> and <code>Mono</code> make use of Java 8 lambdas. You
+<p>【使用不同的基于lambda的subscribe()变体】When it comes to subscribing, <code>Flux</code> and <code>Mono</code> make use of Java 8 lambdas. You
 have a wide choice of <code>.subscribe()</code> variants that take lambdas for different
 combinations of callbacks, as shown in the following method signatures:</p>
 </div>
@@ -4080,7 +4080,7 @@ completes.</td>
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-These variants return a reference to the subscription that you can use to cancel the
+【这些subscribe()变体返回subscription， 用来取消订阅。这种取消和清理行为由通用的Disposable接口表示。】These variants return a reference to the subscription that you can use to cancel the
 subscription when no more data is needed. Upon cancellation, the source should stop
 producing values and clean up any resources it created. This cancel-and-clean-up behavior
 is represented in Reactor by the general-purpose <code>Disposable</code> interface.
@@ -4091,8 +4091,8 @@ is represented in Reactor by the general-purpose <code>Disposable</code> interfa
 <div class="sect3">
 <h4 id="_subscribe_method_examples"><a class="anchor" href="#_subscribe_method_examples"></a>4.3.1. <code>subscribe</code> Method Examples</h4>
 <div class="paragraph">
-<p>This section contains minimal examples of each of the five signatures for the <code>subscribe</code>
-method. The following code shows an example of the basic method with no arguments:</p>
+<p>【5种subscribe方法的示例】This section contains minimal examples of each of the five signatures for the <code>subscribe</code>
+method. 【1.最简单的无参形式】The following code shows an example of the basic method with no arguments:</p>
 </div>
 <div class="exampleblock">
 <div class="content">
@@ -4117,8 +4117,8 @@ ints.subscribe(); <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The preceding code produces no visible output, but it does work. The <code>Flux</code> produces
-three values. If we provide a lambda, we can make the values visible. The next example
+<p>The preceding [前面的] code produces no visible output, but it does work. The <code>Flux</code> produces
+three values. 【2.提供一个lambda表达式】If we provide a lambda, we can make the values visible. The next example
 for the <code>subscribe</code> method shows one way to make the values appear:</p>
 </div>
 <div class="exampleblock">
@@ -4158,7 +4158,7 @@ ints.subscribe(i -&gt; System.out.println(i)); <i class="conum" data-value="2"><
 </div>
 </div>
 <div class="paragraph">
-<p>To demonstrate the next signature, we intentionally introduce an error, as
+<p>【3.处理错误】To demonstrate the next signature, we intentionally introduce an error, as
 shown in the following example:</p>
 </div>
 <div class="exampleblock">
@@ -4217,7 +4217,7 @@ Error: java.lang.RuntimeException: Got to 4</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The next signature of the <code>subscribe</code> method includes both an error handler and
+<p>【4.处理错误信号和完成信号】The next signature of the <code>subscribe</code> method includes both an error handler and
 a handler for completion events, as shown in the following example:</p>
 </div>
 <div class="exampleblock">
@@ -4245,7 +4245,7 @@ ints.subscribe(i -&gt; System.out.println(i),
 </div>
 </div>
 <div class="paragraph">
-<p>Error signals and completion signals are both terminal events and are exclusive of one
+<p>【错误和完成都是终止信号，它们不会同时出现】Error signals and completion signals are both terminal events and are exclusive of one
 another (you never get both). To make the completion consumer work, we must take care not
 to trigger an error.</p>
 </div>
@@ -4271,18 +4271,18 @@ Done</code></pre>
 <div class="sect3">
 <h4 id="_cancelling_a_subscribe_with_its_disposable"><a class="anchor" href="#_cancelling_a_subscribe_with_its_disposable"></a>4.3.2. Cancelling a <code>subscribe()</code> with Its <code>Disposable</code></h4>
 <div class="paragraph">
-<p>All these lambda-based variants of <code>subscribe()</code> have a <code>Disposable</code> return type.
+<p>【所有subscribe()方法都返回一个disposable，可以用来取消subscription】All these lambda-based variants of <code>subscribe()</code> have a <code>Disposable</code> return type.
 In this case, the <code>Disposable</code> interface represents the fact that the subscription
 can be <em>cancelled</em>, by calling its <code>dispose()</code> method.</p>
 </div>
 <div class="paragraph">
-<p>For a <code>Flux</code> or <code>Mono</code>, cancellation is a signal that the source should stop
+<p>【不能保证取消的即刻性】For a <code>Flux</code> or <code>Mono</code>, cancellation is a signal that the source should stop
 producing elements. However, it is NOT guaranteed to be immediate: Some sources
 might produce elements so fast that they could complete even before receiving the
 cancel instruction [指令].</p>
 </div>
 <div class="paragraph">
-<p>Some utilities around <code>Disposable</code> are available in the <code>Disposables</code> class.
+<p>【Disposables类提供了Disposable相关的实用程序，如swap()】Some utilities around <code>Disposable</code> are available in the <code>Disposables</code> class.
 Among these, <code>Disposables.swap()</code> creates a <code>Disposable</code> wrapper that lets
 you atomically cancel and replace a concrete <code>Disposable</code>. This can be useful,
 for instance, in a UI scenario where you want to cancel a request and replace it
@@ -4290,7 +4290,7 @@ with a new one whenever the user clicks on a button. Disposing the wrapper itsel
 closes it. Doing so disposes the current concrete value and all future attempted replacements.</p>
 </div>
 <div class="paragraph">
-<p>Another interesting utility is <code>Disposables.composite(&#8230;&#8203;)</code>. This composite
+<p>【另一个实用工具是composite()】Another interesting utility is <code>Disposables.composite(&#8230;&#8203;)</code>. This composite
 lets you collect several <code>Disposable</code>&#8201;&#8212;&#8201;for instance, multiple in-flight requests
 associated with a service call&#8201;&#8212;&#8201;and dispose all of them at once later on.
 Once the composite&#8217;s <code>dispose()</code> method has been called, any attempt to add
@@ -4300,7 +4300,7 @@ another <code>Disposable</code> immediately disposes it.</p>
 <div class="sect3">
 <h4 id="_an_alternative_to_lambdas_basesubscriber"><a class="anchor" href="#_an_alternative_to_lambdas_basesubscriber"></a>4.3.3. An Alternative to Lambdas: <code>BaseSubscriber</code></h4>
 <div class="paragraph">
-<p>There is an additional <code>subscribe</code> method that is more generic and takes a full-blown [成熟的] 
+<p>【subscribe方法除了接受lambda以外，还可以直接传入一个subscriber】There is an additional <code>subscribe</code> method that is more generic and takes a full-blown [成熟的] 
 <code>Subscriber</code> rather than composing one out of lambdas [用 lambdas 组合一个]. In order to help with writing
 such a <code>Subscriber</code>, we provide an extendable class called <code>BaseSubscriber</code>.</p>
 </div>
@@ -4311,19 +4311,19 @@ such a <code>Subscriber</code>, we provide an extendable class called <code>Base
 <i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-Instances of <code>BaseSubscriber</code> (or subclasses of it) are <strong>single-use</strong>,
+【BaseSubscriber实例是单次使用的，因为Reactive Streams规定subscriber的onNext()方法不能被并行调用】Instances of <code>BaseSubscriber</code> (or subclasses of it) are <strong>single-use</strong>,
 meaning that a <code>BaseSubscriber</code> cancels its subscription to the first <code>Publisher</code> if it
 is subscribed to a second <code>Publisher</code>.
 That is because using an instance twice would violate [违反] the Reactive Streams rule that
 the <code>onNext</code> method of a <code>Subscriber</code> must not be called in parallel.
-As a result, anonymous implementations are fine only if they are declared directly within
+【因此，匿名实现只有在方法的调用中直接声明才可以】As a result, anonymous implementations are fine only if they are declared directly within
 the call to <code>Publisher#subscribe(Subscriber)</code>.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>Now we can implement one of these. We call it a <code>SampleSubscriber</code>. The following
+<p>【示例】Now we can implement one of these. We call it a <code>SampleSubscriber</code>. The following
 example shows how it would be attached to a <code>Flux</code>:</p>
 </div>
 <div class="exampleblock">
@@ -4370,14 +4370,14 @@ public class SampleSubscriber&lt;T&gt; extends BaseSubscriber&lt;T&gt; {
 </div>
 </div>
 <div class="paragraph">
-<p>The <code>SampleSubscriber</code> class extends <code>BaseSubscriber</code>, which is the recommended abstract
+<p>【当需要自定义请求数量时，继承BaseSubscriber很有用】The <code>SampleSubscriber</code> class extends <code>BaseSubscriber</code>, which is the recommended abstract
 class for user-defined <code>Subscribers</code> in Reactor. The class offers hooks that can be
 overridden to tune the subscriber&#8217;s behavior. By default, it triggers an unbounded
 request and behaves exactly as <code>subscribe()</code>. However, extending <code>BaseSubscriber</code> is
 much more useful when you want a custom request amount.</p>
 </div>
 <div class="paragraph">
-<p>For a custom request amount, the bare minimum is to implement <code>hookOnSubscribe(Subscription subscription)</code>
+<p>【最少要求实现 hookOnSubscribe 方法和 hookOnNext 方法】For a custom request amount, the bare minimum is to implement <code>hookOnSubscribe(Subscription subscription)</code>
 and <code>hookOnNext(T value)</code>, as we did. In our case, the <code>hookOnSubscribe</code> method
 prints a statement to standard out and makes the first request. Then the <code>hookOnNext</code>
 method prints a statement and performs additional requests, one request
@@ -4404,7 +4404,7 @@ at a time.</p>
 (equivalent to <code>request(Long.MAX_VALUE)</code>), as well as a <code>cancel()</code> method.</p>
 </div>
 <div class="paragraph">
-<p>It also has additional hooks: <code>hookOnComplete</code>, <code>hookOnError</code>, <code>hookOnCancel</code>, and <code>hookFinally</code>
+<p>【其它 hooks】It also has additional hooks: <code>hookOnComplete</code>, <code>hookOnError</code>, <code>hookOnCancel</code>, and <code>hookFinally</code>
 (which is always called when the sequence terminates, with the type of termination passed
 in as a <code>SignalType</code> parameter)</p>
 </div>
@@ -4415,7 +4415,7 @@ in as a <code>SignalType</code> parameter)</p>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-You almost certainly want to implement the <code>hookOnError</code>, <code>hookOnCancel</code>, and
+【SampleSubscriber是一个有界Subscriber最小程度的实现】You almost certainly want to implement the <code>hookOnError</code>, <code>hookOnCancel</code>, and
 <code>hookOnComplete</code> methods. You may also want to implement the <code>hookFinally</code> method.
 <code>SampleSubscriber</code> is the absolute minimum implementation of a <code>Subscriber</code> <em>that performs
 bounded requests</em>.
@@ -4427,7 +4427,7 @@ bounded requests</em>.
 <div class="sect3">
 <h4 id="_on_backpressure_and_ways_to_reshape_requests"><a class="anchor" href="#_on_backpressure_and_ways_to_reshape_requests"></a>4.3.4. On Backpressure and Ways to Reshape Requests</h4>
 <div class="paragraph">
-<p>When implementing backpressure in Reactor, the way consumer pressure is propagated back to the source is by sending a <code>request</code> to the upstream operator.
+<p>【Reactor实现背压的方式是发送request到上游算子，<code>Long.MAX_VALUE</code> 表示禁用背压】When implementing backpressure in Reactor, the way consumer pressure is propagated back to the source is by sending a <code>request</code> to the upstream operator.
 The sum of current requests is sometimes referenced to as the current &#8220;demand&#8221;, or &#8220;pending request&#8221;.
 Demand is capped [封顶的] at <code>Long.MAX_VALUE</code>, representing an unbounded request (meaning &#8220;produce as fast as you can&#8221;&#8201;&#8212;&#8201;basically disabling backpressure).</p>
 </div>
@@ -4450,7 +4450,7 @@ Demand is capped [封顶的] at <code>Long.MAX_VALUE</code>, representing an unb
 </ul>
 </div>
 <div class="paragraph">
-<p>The simplest way of customizing the original request is to <code>subscribe</code> with a <code>BaseSubscriber</code> with the <code>hookOnSubscribe</code> method overridden, as the following example shows:</p>
+<p>【实现BaseSubscriber的hookOnSubscribe方法是自定义原始请求最简单的方式】The simplest way of customizing the original request is to <code>subscribe</code> with a <code>BaseSubscriber</code> with the <code>hookOnSubscribe</code> method overridden, as the following example shows:</p>
 </div>
 <div class="exampleblock">
 <div class="content">
@@ -4495,7 +4495,7 @@ Cancelling after having received 1</code></pre>
 <i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-When manipulating [操作] a request, you must be careful to produce enough demand for
+【注意请求足够的数量 来确保序列前进，否则你的流会卡住】When manipulating [操作] a request, you must be careful to produce enough demand for
 the sequence to advance [前进], or your Flux can get &#8220;stuck[卡住]&#8221;. That is why <code>BaseSubscriber</code>
 defaults to an unbounded request in <code>hookOnSubscribe</code>. When overriding this hook, you should usually
 call <code>request</code> at least once.
@@ -4513,7 +4513,7 @@ As a consequence [因此], since buffers need <code>N</code> elements to be cons
 <div class="paragraph">
 <p>【以 prefetch 作为输入参数的算子】<br/>You might also have noticed that some operators have variants that take an <code>int</code> input parameter called <code>prefetch</code>.
 This is another category of operators that modify the downstream request.
-These are usually operators that deal with inner sequences, deriving [衍生] a <code>Publisher</code> from each incoming element (like <code>flatMap</code>).
+These are usually operators that deal with <b>inner sequences</b>, deriving [衍生] a <code>Publisher</code> from each incoming element (like <code>flatMap</code>).
 </p>
 </div>
 <div class="paragraph">
@@ -4535,7 +4535,7 @@ Finally, a couple of operators let you directly tune the request: <code>limitRat
 <div class="paragraph">
 <p><code>limitRate(N)</code> splits the downstream requests so that they are propagated upstream in smaller batches.
 For instance, a request of <code>100</code> made to <code>limitRate(10)</code> would result in, at most, <code>10</code> requests of <code>10</code> being propagated to the upstream [导致请求10个10个的传到上游].
-Note that, in this form, <code>limitRate</code> actually implements the replenishing [补充] optimization discussed earlier.</p>
+Note that, in this form, <code>limitRate</code> actually implements the replenishing optimization [补充优化] discussed earlier.</p>
 </div>
 <div class="paragraph">
 <p>The operator has a variant that also lets you tune the replenishing amount [补充量] (referred to as the [在变体中称为] <code>lowTide</code> in the variant): <code>limitRate(highTide, lowTide)</code>.
@@ -4552,7 +4552,7 @@ After that amount has been emitted by the source, <code>limitRequest</code> cons
 <div class="sect2">
 <h3 id="producing"><a class="anchor" href="#producing"></a>4.4. Programmatically creating a sequence</h3>
 <div class="paragraph">
-<p>In this section, we introduce the creation of a <code>Flux</code> or a <code>Mono</code> by
+<p>【通过编程定义相关事件 onNext, onError, onComplete 来创建流】In this section, we introduce the creation of a <code>Flux</code> or a <code>Mono</code> by
 programmatically defining its associated events (<code>onNext</code>, <code>onError</code>, and
 <code>onComplete</code>). All these methods share the fact that they expose an API to
 trigger the events that we call a <strong>sink</strong>. There are actually a few sink
@@ -4561,17 +4561,17 @@ variants, which we&#8217;ll get to shortly.</p>
 <div class="sect3">
 <h4 id="producing.generate"><a class="anchor" href="#producing.generate"></a>4.4.1. Synchronous <code>generate</code></h4>
 <div class="paragraph">
-<p>The simplest form of programmatic creation of a <code>Flux</code> is through the <code>generate</code>
+<p>【最简单的方式是使用 generate 方法】The simplest form of programmatic creation of a <code>Flux</code> is through the <code>generate</code>
 method, which takes a generator function.</p>
 </div>
 <div class="paragraph">
-<p>This is for <strong>synchronous</strong> and <strong>one-by-one</strong> emissions, meaning that
+<p>【这是同步，一个接一个发送的情况】This is for <strong>synchronous</strong> and <strong>one-by-one</strong> emissions, meaning that
 the sink is a <code>SynchronousSink</code> and that its <code>next()</code> method can only be called
 at most once per callback invocation. You can then additionally call <code>error(Throwable)</code>
 or <code>complete()</code>, but this is optional.</p>
 </div>
 <div class="paragraph">
-<p>The most useful variant is probably the one that also lets you keep a state
+<p>【最有用的遍体是提供了一个发送时可供参考的state】The most useful variant is probably the one that also lets you keep a state
 that you can refer to in your sink usage to decide what to emit next. The generator
 function then becomes a <code>BiFunction&lt;S, SynchronousSink&lt;T&gt;, S&gt;</code>, with <code>&lt;S&gt;</code> the
 type of the state object. You have to provide a <code>Supplier&lt;S&gt;</code> for the initial
@@ -4641,7 +4641,7 @@ sequence terminated in this one).</td>
 </div>
 </div>
 <div class="paragraph">
-<p>You can also use a mutable [可变的] <code>&lt;S&gt;</code>. The example above could for instance be
+<p>【还可以使用一个可变的State】You can also use a mutable [可变的] <code>&lt;S&gt;</code>. The example above could for instance be
 rewritten using a single <code>AtomicLong</code> as the state, mutating it on each round:</p>
 </div>
 <div class="exampleblock">
@@ -4692,7 +4692,7 @@ state instance.
 </table>
 </div>
 <div class="paragraph">
-<p>The following example uses the <code>generate</code> method that includes a <code>Consumer</code>:</p>
+<p>【提供一个Consumer来处理State】The following example uses the <code>generate</code> method that includes a <code>Consumer</code>:</p>
 </div>
 <div class="exampleblock">
 <div class="content">
@@ -4731,7 +4731,7 @@ state instance.
 </div>
 </div>
 <div class="paragraph">
-<p>In the case of the state containing a database connection or other resource
+<p>【Consumer可以帮忙处理需要清理的资源，比如关闭一个数据库连接】In the case of the state containing a database connection or other resource
 that needs to be handled at the end of the process, the <code>Consumer</code> lambda could
 close the connection or  otherwise handle any tasks that should be done at the
 end of the process.</p>
@@ -4740,11 +4740,11 @@ end of the process.</p>
 <div class="sect3">
 <h4 id="producing.create"><a class="anchor" href="#producing.create"></a>4.4.2. Asynchronous and Multi-threaded: <code>create</code></h4>
 <div class="paragraph">
-<p><code>create</code> is a more advanced form of programmatic creation of a <code>Flux</code> which is
+<p>【create是更进阶的创建流的方法，适用于一轮多次发送，包括从多个线程发送】<code>create</code> is a more advanced form of programmatic creation of a <code>Flux</code> which is
 suitable for multiple emissions per round, even from multiple threads.</p>
 </div>
 <div class="paragraph">
-<p>It exposes a <code>FluxSink</code>, with its <code>next</code>, <code>error</code>, and <code>complete</code> methods.
+<p>【create没有像generate一样提供基于state的遍体，但它允许在回调中触发多线程的事件】It exposes a <code>FluxSink</code>, with its <code>next</code>, <code>error</code>, and <code>complete</code> methods.
 Contrary [相反] to <code>generate</code>, it doesn&#8217;t have a state-based variant. On the other
 hand, it can trigger multi-threaded events in the callback.</p>
 </div>
@@ -4754,7 +4754,7 @@ hand, it can trigger multi-threaded events in the callback.</p>
 <td class="icon">
 <i class="fa icon-tip" title="Tip"></i>
 </td>
-<td class="content">
+<td class="content">【create在创建适用于反应式世界的API时非常有用，例如基于listeners的异步API】
 <code>create</code> can be very useful to bridge an existing API with the reactive
 world - such as an asynchronous API based on listeners.
 </td>
@@ -4767,13 +4767,13 @@ world - such as an asynchronous API based on listeners.
 <td class="icon">
 <i class="fa icon-warning" title="Warning"></i>
 </td>
-<td class="content">
+<td class="content">【create即并行化也不异步化你的代码，但它可以和异步API一起使用】
 <code>create</code> <strong>doesn&#8217;t parallelize your code nor does it make it asynchronous</strong>, even
 though it <em>can</em> be used with asynchronous APIs. If you block within the <code>create</code> lambda,
-you expose yourself to deadlocks and similar side effects [死锁以及类似于死锁的副作用]. Even with the use of <code>subscribeOn</code>,
+you expose yourself to deadlocks and similar side effects【如果你在create中block，会将自己暴露在死锁以及类似于死锁的副作用下】. Even with the use of <code>subscribeOn</code>,
 there&#8217;s the caveat [警告] that a long-blocking <code>create</code> lambda (such as an infinite loop calling
 <code>sink.next(t)</code>) can lock the pipeline: the requests would never be performed due to the
-loop starving [占用了] the same thread they are supposed to run from. Use the <code>subscribeOn(Scheduler, false)</code>
+loop starving [占用了] the same thread they are supposed to run from【长时间block的create lambada，例如无限的循环调用sink.next()会锁住pipeline: 请求不会被执行因为循环占用了它们运行所需的线程，即使你使用了subscribeOn()】. Use the <code>subscribeOn(Scheduler, false)</code>
 variant: <code>requestOnSeparateThread = false</code> will use the <code>Scheduler</code> thread for the <code>create</code>
 and still let data flow by performing <code>request</code> in the original thread.
 </td>
@@ -4781,7 +4781,7 @@ and still let data flow by performing <code>request</code> in the original threa
 </table>
 </div>
 <div class="paragraph">
-<p>Imagine that you use a listener-based API. It processes data by chunks
+<p>【假如你在使用一个基于监听的API】Imagine that you use a listener-based API. It processes data by chunks
 and has two events: (1) a chunk of data is ready and (2) the processing is
 complete (terminal event), as represented in the <code>MyEventListener</code> interface:</p>
 </div>
@@ -4844,28 +4844,28 @@ complete (terminal event), as represented in the <code>MyEventListener</code> in
 </div>
 </div>
 <div class="paragraph">
-<p>Additionally, since <code>create</code> can bridge asynchronous APIs and manages backpressure, you
-can refine how to behave backpressure-wise, by indicating an <code>OverflowStrategy</code>:</p>
+<p>【通过指明OverflowStrategy来细化如何表现背压】Additionally, since <code>create</code> can bridge asynchronous APIs and manages backpressure, you
+can refine [改进] how to behave backpressure-wise, by indicating an <code>OverflowStrategy</code>:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><code>IGNORE</code> to Completely ignore downstream backpressure requests.
+<p><code>IGNORE</code>【完全忽略下游的背压请求】to Completely ignore downstream backpressure requests.
 This may yield <code>IllegalStateException</code> when queues get full downstream.</p>
 </li>
 <li>
-<p><code>ERROR</code> to signal an <code>IllegalStateException</code> when the downstream can&#8217;t keep
+<p><code>ERROR</code>【在下游无法处理时发送一个 IllegalStateException】to signal an <code>IllegalStateException</code> when the downstream can&#8217;t keep
 up.</p>
 </li>
 <li>
-<p><code>DROP</code> to drop the incoming signal if the downstream is not ready to receive
+<p><code>DROP</code>【在下游无法接受时丢弃数据】to drop the incoming signal if the downstream is not ready to receive
 it.</p>
 </li>
 <li>
-<p><code>LATEST</code> to let downstream only get the latest signals from upstream.</p>
+<p><code>LATEST</code>【只保留最新数据】to let downstream only get the latest signals from upstream.</p>
 </li>
 <li>
-<p><code>BUFFER</code> (the default) to buffer all signals if the downstream can&#8217;t keep up.
+<p><code>BUFFER</code> (the default)【默认缓存所有下游来不及消费的数据】to buffer all signals if the downstream can&#8217;t keep up.
 (this does unbounded buffering and may lead to <code>OutOfMemoryError</code>).</p>
 </li>
 </ul>
@@ -4887,7 +4887,7 @@ doesn&#8217;t allow several emissions. It will drop all signals after the first 
 <div class="sect3">
 <h4 id="_asynchronous_but_single_threaded_push"><a class="anchor" href="#_asynchronous_but_single_threaded_push"></a>4.4.3. Asynchronous but single-threaded: <code>push</code></h4>
 <div class="paragraph">
-<p><code>push</code> is a middle ground between <code>generate</code> and <code>create</code> which is suitable for
+<p>【push是介于generate和create中间的一种方式，适用于处理来自于单个producer的事件】<code>push</code> is a middle ground between <code>generate</code> and <code>create</code> which is suitable for
 processing events from a single producer. It is similar to <code>create</code> in the sense
 that it can also be asynchronous and can manage backpressure using any of the
 overflow strategies supported by <code>create</code>. However, <strong>only one producing thread</strong>
@@ -4943,18 +4943,18 @@ may invoke <code>next</code>, <code>complete</code> or <code>error</code> at a t
 <div class="sect4">
 <h5 id="_a_hybrid_pushpull_model"><a class="anchor" href="#_a_hybrid_pushpull_model"></a>A hybrid push/pull model</h5>
 <div class="paragraph">
-<p>Most Reactor operators, like <code>create</code>, follow a hybrid <strong>push/pull</strong> model.
-What we mean by that is that despite most of the processing being asynchronous
+<p>【大部分Reactor算子，比如create，都是混合的push/pull模型】Most Reactor operators, like <code>create</code>, follow a hybrid <strong>push/pull</strong> model.
+What we mean by that is that despite [尽管] most of the processing being asynchronous
 (suggesting a <em>push</em> approach), there is a small <em>pull</em> component to it: the
 request.</p>
 </div>
 <div class="paragraph">
-<p>The consumer <em>pulls</em> data from the source in the sense that it won&#8217;t emit anything
+<p>【消费者从源拉数据，源推送数据给消费者】The consumer <em>pulls</em> data from the source in the sense that it won&#8217;t emit anything
 until first requested. The source <em>pushes</em> data to the consumer whenever it
 becomes available, but within the bounds of its requested amount.</p>
 </div>
 <div class="paragraph">
-<p>Note that <code>push()</code> and <code>create()</code> both allow to set up an <code>onRequest</code> consumer
+<p>【push和create都可以接受一个onRequest回调，来确保sink只有在收到请求时推送数据】Note that <code>push()</code> and <code>create()</code> both allow to set up an <code>onRequest</code> consumer
 in order to manage the request amount and to ensure that data is pushed through
 the sink only when there is pending request.</p>
 </div>
@@ -5003,7 +5003,7 @@ the sink only when there is pending request.</p>
 <div class="sect4">
 <h5 id="_cleaning_up_after_push_or_create"><a class="anchor" href="#_cleaning_up_after_push_or_create"></a>Cleaning up after <code>push()</code> or <code>create()</code></h5>
 <div class="paragraph">
-<p>Two callbacks, <code>onDispose</code> and <code>onCancel</code>, perform any cleanup on cancellation
+<p>【onCancel回调在下游subscription调用了cancel方法时执行清理工作；onDispose在当前sink发送了error/complete或下游subscription调用了cancel方法时执行清理工作】Two callbacks, <code>onDispose</code> and <code>onCancel</code>, perform any cleanup on cancellation
 or termination. <code>onDispose</code> can be used to perform cleanup when the <code>Flux</code>
 completes, errors out, or is cancelled. <code>onCancel</code> can be used to perform any
 action specific to cancellation prior to cleanup with <code>onDispose</code>.</p>
@@ -5038,14 +5038,14 @@ action specific to cancellation prior to cleanup with <code>onDispose</code>.</p
 <div class="sect3">
 <h4 id="_handle"><a class="anchor" href="#_handle"></a>4.4.4. Handle</h4>
 <div class="paragraph">
-<p>The <code>handle</code> method is a bit different: it is an instance method, meaning that
+<p>【handle方法是一个实例方法，需要用在一个存在的对象上】The <code>handle</code> method is a bit different: it is an instance method, meaning that
 it is chained on an existing source (as are the common operators). It is present
 in both <code>Mono</code> and <code>Flux</code>.</p>
 </div>
 <div class="paragraph">
-<p>It is close to <code>generate</code>, in the sense that it uses a <code>SynchronousSink</code> and
+<p>【handle和generate相同，使用同步Sink并且只允许一个接一个的发送，但可以从原始元素生成任意值，也可以跳过元素，类似于filter和map的结合】It is close to <code>generate</code>, in the sense that it uses a <code>SynchronousSink</code> and
 only allows one-by-one emissions. However, <code>handle</code> can be used to generate an
-arbitrary value out of each source element, possibly skipping some elements. In
+arbitrary [任意的] value out of each source element, possibly skipping some elements. In
 this way, it can serve as a combination of <code>map</code> and <code>filter</code>. The signature of
 handle is as follows:</p>
 </div>
@@ -5137,12 +5137,12 @@ T</pre>
 <div class="sect2">
 <h3 id="schedulers"><a class="anchor" href="#schedulers"></a>4.5. Threading and Schedulers</h3>
 <div class="paragraph">
-<p>Reactor, like RxJava, can be considered to be <strong>concurrency-agnostic</strong>. That is, it does not
-enforce a concurrency model. Rather, it leaves you, the developer, in command. However,
+<p>【Reactor将并发的管理权交给开发者，并帮助开发者处理并发】Reactor, like RxJava, can be considered to be <strong>concurrency-agnostic</strong> [不可知论的；怀疑的]. That is, it does not
+enforce a concurrency model. Rather, it leaves you, the developer, in command [负责]. However,
 that does not prevent the library from helping you with concurrency.</p>
 </div>
 <div class="paragraph">
-<p>Obtaining a <code>Flux</code> or a <code>Mono</code> does not necessarily mean that it runs in a dedicated
+<p>【流并不一定在专用线程中运行，相反大多数算子继续在执行前一个算子的线程中工作。除非特别指定，否则最顶层的算子会在发出subscribe()调用的线程上运行】Obtaining a <code>Flux</code> or a <code>Mono</code> does not necessarily [必然] mean that it runs in a dedicated [专用的]
 <code>Thread</code>. Instead, most operators continue working in the <code>Thread</code> on which the
 previous operator executed. Unless specified, the topmost operator (the source)
 itself runs on the <code>Thread</code> in which the <code>subscribe()</code> call was made. The following
@@ -5198,55 +5198,55 @@ example runs a <code>Mono</code> in a new thread:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>In Reactor, the execution model and where the execution happens is determined by the
+<p>【在Reactor中，执行模型和执行发生的位置由所使用的Scheduler决定】In Reactor, the execution model and where the execution happens is determined by the
 <code>Scheduler</code> that is used. A
 <a href="https://projectreactor.io/docs/core/release/api/reactor/core/scheduler/Scheduler.html"><code>Scheduler</code></a>
 has scheduling responsibilities similar to an <code>ExecutorService</code>, but having a
-dedicated abstraction lets it do more, notably acting as a clock and enabling
+dedicated [专用的] abstraction lets it do more, notably [特别是] acting as a clock and enabling
 a wider range of implementations (virtual time for tests, trampolining or
 immediate scheduling, and so on).</p>
 </div>
 <div class="paragraph">
-<p>The <a href="https://projectreactor.io/docs/core/release/api/reactor/core/scheduler/Schedulers.html"><code>Schedulers</code></a>
+<p>【Schedulers类的静态方法提供对以下执行上下文的访问】The <a href="https://projectreactor.io/docs/core/release/api/reactor/core/scheduler/Schedulers.html"><code>Schedulers</code></a>
 class has static methods that give access to the following execution contexts:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>No execution context (<code>Schedulers.immediate()</code>): at processing time, the submitted <code>Runnable</code>
+<p>【没有执行上下文】No execution context (<code>Schedulers.immediate()</code>): at processing time, the submitted <code>Runnable</code>
 will be directly executed, effectively running them on the current <code>Thread</code> (can be seen as a "null object" or no-op <code>Scheduler</code>).</p>
 </li>
 <li>
-<p>A single, reusable thread (<code>Schedulers.single()</code>). Note that this method reuses the
+<p>【单个可复用的线程】A single, reusable thread (<code>Schedulers.single()</code>). Note that this method reuses the
 same thread for all callers, until the Scheduler is disposed. If you want a per-call
 dedicated thread, use <code>Schedulers.newSingle()</code> for each call.</p>
 </li>
 <li>
-<p>An unbounded elastic thread pool (<code>Schedulers.elastic()</code>). This one is no longer preferred
-with the introduction of <code>Schedulers.boundedElastic()</code>, as it has a tendency to hide backpressure
+<p>【无界弹性线程池】An unbounded elastic thread pool (<code>Schedulers.elastic()</code>). This one is no longer preferred [首选]
+with the introduction [引入] of <code>Schedulers.boundedElastic()</code>, as it has a tendency [倾向] to hide backpressure
 problems and lead to too many threads (see below).</p>
 </li>
 <li>
-<p>A bounded elastic thread pool (<code>Schedulers.boundedElastic()</code>). This is a handy way to
-give a blocking process its own thread so that it does not tie up other resources. This is a better choice for I/O blocking work. See
+<p>【有界弹性线程池】A bounded elastic thread pool (<code>Schedulers.boundedElastic()</code>). This is a handy [方便] way to
+give a blocking process its own thread so that it does not tie up [占用] other resources. This is a better choice for I/O blocking work. See
 <a href="#faq.wrap-blocking">How Do I Wrap a Synchronous, Blocking Call?</a>, but doesn&#8217;t pressure the system too much with new threads.
 Starting from 3.6.0 this can offer two different implementations depending on the setup:</p>
 <div class="ulist">
 <ul>
 <li>
-<p><code>ExecutorService</code>-based, which reuses platform threads between tasks. This
-implementation, like its predecessor <code>elastic()</code>, creates new worker pools as needed
-and reuses idle ones. Worker pools that stay idle for too long (the default is 60s) are
+<p>【基于ExecutorService，复用平台线程】<code>ExecutorService</code>-based, which reuses platform threads between tasks. This
+implementation, like its predecessor [前身] <code>elastic()</code>, creates new worker pools as needed
+and reuses idle [空闲的] ones. Worker pools that stay idle for too long (the default is 60s) are
 also disposed. Unlike its <code>elastic()</code> predecessor, it has a cap on the number of backing threads it can create (default is number of CPU cores x 10).
 Up to 100 000 tasks submitted after the cap has been reached are enqueued and will be re-scheduled when a thread becomes available
 (when scheduling with a delay, the delay starts when the thread becomes available).</p>
 </li>
 <li>
-<p>Thread-per-task-based, designed to run on <code>VirtualThread</code> instances.
-To embrace that functionality, the application should run in Java 21+ environment and set the <code>reactor.schedulers.defaultBoundedElasticOnVirtualThreads</code> system property to <code>true</code>.
+<p>【在虚拟线程上运行，每个任务一个线程】Thread-per-task-based, designed to run on <code>VirtualThread</code> instances.
+To embrace [实现] that functionality [功能], the application should run in Java 21+ environment and set the <code>reactor.schedulers.defaultBoundedElasticOnVirtualThreads</code> system property to <code>true</code>.
 Once the above is set, the shared <code>Schedulers.boundedElastic()</code> return a specific implementation
-of <code>BoundedElasticScheduler</code> tailored to run every task on a new instance of the
-<code>VirtualThread</code> class. This implementation is similar in terms of the behavior to the
+of <code>BoundedElasticScheduler</code> tailored [专门的] to run every task on a new instance of the
+<code>VirtualThread</code> class. This implementation is similar in terms of the behavior [在行为上] to the
 <code>ExecutorService</code>-based one but does not have idle pool and creates a new <code>VirtualThread</code>
 for each task.</p>
 </li>
@@ -5254,18 +5254,18 @@ for each task.</p>
 </div>
 </li>
 <li>
-<p>A fixed pool of workers that is tuned for parallel work (<code>Schedulers.parallel()</code>). It
+<p>【针对并行工作优化的固定线程池】A fixed pool of workers that is tuned for parallel work (<code>Schedulers.parallel()</code>). It
 creates as many workers as you have CPU cores.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Additionally, you can create a <code>Scheduler</code> out of any pre-existing <code>ExecutorService</code> by
+<p>【使用Schedulers.fromExecutorService(ExecutorService)自定义Schedulers】Additionally, you can create a <code>Scheduler</code> out of any pre-existing <code>ExecutorService</code> by
 using <code>Schedulers.fromExecutorService(ExecutorService)</code>. (You can also create one from an
-<code>Executor</code>, although doing so is discouraged.)</p>
+<code>Executor</code>, although doing so is discouraged [不鼓励].)</p>
 </div>
 <div class="paragraph">
-<p>You can also create new instances of the various scheduler types by using the <code>newXXX</code>
+<p>【使用newXXX方法创建各种类型scheduler的实例】You can also create new instances of the various scheduler types by using the <code>newXXX</code>
 methods. For example, <code>Schedulers.newParallel(yourScheduleName)</code> creates a new parallel
 scheduler named <code>yourScheduleName</code>.</p>
 </div>
@@ -5277,14 +5277,14 @@ scheduler named <code>yourScheduleName</code>.</p>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>While <code>boundedElastic</code> is made to help with legacy blocking code if it cannot be avoided,
-<code>single</code> and <code>parallel</code> are not. As a consequence, the use of Reactor blocking APIs
+<p>【在single和parallel调度器中使用阻塞API会导致IllegalStateException异常】While <code>boundedElastic</code> is made to help with legacy blocking code if it cannot be avoided,
+<code>single</code> and <code>parallel</code> are not. As a consequence [因此], the use of Reactor blocking APIs
 (<code>block()</code>, <code>blockFirst()</code>, <code>blockLast()</code> (as well as iterating over <code>toIterable()</code>
 or <code>toStream()</code>) inside the default single and parallel schedulers) results in
 an <code>IllegalStateException</code> being thrown.</p>
 </div>
 <div class="paragraph">
-<p>Custom <code>Schedulers</code> can also be marked as "non blocking only" by creating instances of <code>Thread</code>
+<p>【自定义的调度器可以通过实现NonBlocking接口将自己标记为"仅用于非阻塞"】Custom <code>Schedulers</code> can also be marked as "non blocking only" by creating instances of <code>Thread</code>
 that implement the <code>NonBlocking</code> marker interface.</p>
 </div>
 </td>
@@ -5292,9 +5292,9 @@ that implement the <code>NonBlocking</code> marker interface.</p>
 </table>
 </div>
 <div class="paragraph">
-<p>Some operators use a specific scheduler from <code>Schedulers</code> by default (and usually give
+<p>【一些算子可能会默认使用Schedulers中的特定调度器，并允许你提供不同调度器】Some operators use a specific scheduler from <code>Schedulers</code> by default (and usually give
 you the option of providing a different one). For instance, calling the
-<code>Flux.interval(Duration.ofMillis(300))</code> factory method produces a <code>Flux&lt;Long&gt;</code> that ticks every 300ms.
+<code>Flux.interval(Duration.ofMillis(300))</code> factory method produces a <code>Flux&lt;Long&gt;</code> that ticks [滴答] every 300ms.
 By default, this is enabled by <code>Schedulers.parallel()</code>. The following line changes the
 Scheduler to a new instance similar to <code>Schedulers.single()</code>:</p>
 </div>
@@ -5308,15 +5308,15 @@ Scheduler to a new instance similar to <code>Schedulers.single()</code>:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Reactor offers two means of switching the execution context (or <code>Scheduler</code>) in a
+<p>【publishOn和subscribeOn允许你在响应链中切换Scheduler，其中publishOn在链中的位置很重要，而subscribeOn的位置则不重要】Reactor offers two means [方法] of switching the execution context (or <code>Scheduler</code>) in a
 reactive chain: <code>publishOn</code> and <code>subscribeOn</code>. Both take a <code>Scheduler</code> and let you switch
 the execution context to that scheduler. But the placement of <code>publishOn</code> in the chain
-matters, while the placement of <code>subscribeOn</code> does not. To understand that difference,
+matters, while the placement [位置] of <code>subscribeOn</code> does not. To understand that difference,
 you first have to remember that <a href="#reactive.subscribe">nothing happens until you
 subscribe</a>.</p>
 </div>
 <div class="paragraph">
-<p>In Reactor, when you chain operators, you can wrap as many <code>Flux</code> and <code>Mono</code>
+<p>【在Reactor中，可以根据需要将尽可能多的Flux和Mono实现包装在一起，其中，特定于算子的中间订阅者是透明的，但实际上它们才是真正的工作发生的地方】In Reactor, when you chain operators, you can wrap as many <code>Flux</code> and <code>Mono</code>
 implementations inside one another as you need. Once you subscribe, a chain of
 <code>Subscriber</code> objects is created, backward (up the chain) to the first
 publisher. This is effectively hidden from you. All you can see is the outer layer of
@@ -5330,7 +5330,7 @@ operators:</p>
 <div class="sect3">
 <h4 id="_the_publishon_method"><a class="anchor" href="#_the_publishon_method"></a>4.5.1. The <code>publishOn</code> Method</h4>
 <div class="paragraph">
-<p><code>publishOn</code> applies in the same way as any other operator, in the middle of the
+<p>【publishOn从上游接收信号，并在下游重放这些信号(在关联的Scheduler中执行)，因此，它会影响后续操作符的执行位置(直到另一个publishOn被链接进来)】<code>publishOn</code> applies in the same way as any other operator, in the middle of the
 subscriber chain. It takes signals from upstream and replays them downstream while
 executing the callback on a worker from the associated <code>Scheduler</code>. Consequently, it
 <strong>affects where the subsequent operators execute</strong> (until another <code>publishOn</code> is
@@ -5339,13 +5339,13 @@ chained in), as follows:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Changes the execution context to one <code>Thread</code> picked by the <code>Scheduler</code></p>
+<p>【将执行上下文更改为Scheduler选择的一个线程】Changes the execution context to one <code>Thread</code> picked by the <code>Scheduler</code></p>
 </li>
 <li>
-<p>as per the specification, <code>onNext</code> calls happen in sequence, so this uses up a single thread</p>
+<p>【根据规范，onNext调用是按顺序发生的，因此这会占用单个线程】as per the specification, <code>onNext</code> calls happen in sequence, so this uses up a single thread</p>
 </li>
 <li>
-<p>unless they work on a specific <code>Scheduler</code>, operators after <code>publishOn</code> continue execution on that same thread</p>
+<p>【publishOn之后的算子将继续在同一线程上执行，除非它们被指明在特定的Scheduler上工作】unless they work on a specific <code>Scheduler</code>, operators after <code>publishOn</code> continue execution on that same thread</p>
 </li>
 </ul>
 </div>
@@ -5398,22 +5398,22 @@ The print happens on the latest execution context, which is the one from <code>p
 <div class="sect3">
 <h4 id="_the_subscribeon_method"><a class="anchor" href="#_the_subscribeon_method"></a>4.5.2. The <code>subscribeOn</code> Method</h4>
 <div class="paragraph">
-<p><code>subscribeOn</code> applies to the subscription process, when the backward chain is being
-constructed. It is usually recommended to place it immediately after the source of data,
+<p>【subscribeOn应用于订阅过程，即构造反向链时】<code>subscribeOn</code> applies to the subscription process, when the backward chain is being
+constructed [构造]. It is usually recommended to place it immediately after the source of data,
 as intermediate operators can affect the context of the execution.</p>
 </div>
 <div class="paragraph">
-<p>However, this does not affect the
+<p>【但这并不影响对publishOn的后续调用的行为，它们仍然会切换其后链的执行上下文】However, this does not affect the
 behavior of subsequent calls to <code>publishOn</code>&#8201;&#8212;&#8201;they still switch the execution context for
 the part of the chain after them.</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Changes the <code>Thread</code> from which the <strong>whole chain</strong> of operators subscribes</p>
+<p>【更改整个算子链发生订阅的线程】Changes the <code>Thread</code> from which the <strong>whole chain</strong> of operators subscribes</p>
 </li>
 <li>
-<p>Picks one thread from the <code>Scheduler</code></p>
+<p>【从Scheduler中选择一个线程】Picks one thread from the <code>Scheduler</code></p>
 </li>
 </ul>
 </div>
@@ -5424,9 +5424,9 @@ the part of the chain after them.</p>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Only the closest <code>subscribeOn</code> call in the downstream chain effectively
+【使用多个subscribeOn调用将引入没有价值的不必要的线程切换，只有最近的subscribeOn有效】Only the closest <code>subscribeOn</code> call in the downstream chain effectively
  schedules subscription and request signals to the source or operators that can
- intercept them (<code>doFirst</code>, <code>doOnRequest</code>). Using multiple <code>subscribeOn</code> calls will
+ intercept [拦截] them (<code>doFirst</code>, <code>doOnRequest</code>). Using multiple <code>subscribeOn</code> calls will
  introduce unnecessary Thread switches that have no value.
 </td>
 </tr>
@@ -5487,7 +5487,7 @@ new Thread(() -&gt; flux.subscribe(System.out::println));  <i class="conum" data
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-For a quick look at the available operators for error handling, see
+【快速查看可用的错误处理算子】For a quick look at the available operators for error handling, see
 <a href="#which.errors">the relevant operator decision tree</a>.
 </td>
 </tr>
@@ -10057,14 +10057,14 @@ purple</pre>
 <div class="sect2">
 <h3 id="reactor.hotCold"><a class="anchor" href="#reactor.hotCold"></a>9.2. Hot Versus Cold</h3>
 <div class="paragraph">
-<p>So far, we have considered that all <code>Flux</code> (and <code>Mono</code>) are the same: They all represent
+<p>【目前为止，我们认为Flux/Mono代表一个异步的数据序列，并且在订阅之前数据不会流动】So far, we have considered that all <code>Flux</code> (and <code>Mono</code>) are the same: They all represent
 an asynchronous sequence of data, and nothing happens before you subscribe.</p>
 </div>
 <div class="paragraph">
 <p>Really, though, there are two broad families of publishers: hot and cold.</p>
 </div>
 <div class="paragraph">
-<p>【Clod publishers 为订阅者重新生成数据】The earlier description applies to the cold family of publishers. They generate data anew
+<p>【前面的描述是指Clod publishers，它们为每个订阅者从头重新生成数据序列】The earlier description applies to the cold family of publishers. They generate data anew
 for each subscription. If no subscription is created, data never gets generated.</p>
 </div>
 <div class="paragraph">
@@ -10072,7 +10072,7 @@ for each subscription. If no subscription is created, data never gets generated.
 made if no one is interested in the result.</p>
 </div>
 <div class="paragraph">
-<p>【Hot publishers 立即开始发布数据，不在意订阅者的数量】Hot publishers, on the other hand, do not depend on any number of subscribers. They
+<p>【Hot publishers立即开始发布数据，不在意订阅者的数量，订阅者会收到在它们订阅后发布的数据】Hot publishers, on the other hand, do not depend on any number of subscribers. They
 might start publishing data right away and would continue doing so whenever a new
 <code>Subscriber</code> comes in (in which case, the subscriber would see only new elements emitted
 <em>after</em> it subscribed). For hot publishers, <em>something</em> does indeed happen before you
@@ -10085,12 +10085,12 @@ call analogy, if the captured data is the result of an HTTP call, then only one 
 call is made, when instantiating [实例化] <code>just</code>.</p>
 </div>
 <div class="paragraph">
-<p>To transform <code>just</code> into a cold publisher, you can use <code>defer</code>. It defers [推迟] the HTTP
+<p>【将 just 转换成 cold publisher: defer()】To transform <code>just</code> into a cold publisher, you can use <code>defer</code>. It defers [推迟] the HTTP
 request in our example to subscription time (and would result in a separate network call
 for each new subscription).</p>
 </div>
 <div class="paragraph">
-<p>On the opposite, <code>share()</code> and <code>replay(&#8230;&#8203;)</code> can be used to turn a cold publisher into
+<p>【将 cold publisher 转换成 hot publisher: share()/replay(...)】On the opposite, <code>share()</code> and <code>replay(&#8230;&#8203;)</code> can be used to turn a cold publisher into
 a hot one (at least once a first subscription has happened). Both of these also have
 <code>Sinks.Many</code> equivalents in the <code>Sinks</code> class, which allow programmatically
 feeding the sequence.</p>
@@ -10103,7 +10103,8 @@ feeding the sequence.</p>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Flux&lt;String&gt; source = Flux.fromIterable(Arrays.asList("blue", "green", "orange", "purple"))
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">//cold Flux
+Flux&lt;String&gt; source = Flux.fromIterable(Arrays.asList("blue", "green", "orange", "purple"))
                           .map(String::toUpperCase);
 
 source.subscribe(d -&gt; System.out.println("Subscriber 1: "+d));
@@ -10150,7 +10151,9 @@ process defined by the operators on the <code>Flux</code> to run.</p>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Sinks.Many&lt;String&gt; hotSource = Sinks.unsafe().many().multicast().directBestEffort();
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">
+//use Sinks to simulate a hot Flux
+Sinks.Many&lt;String&gt; hotSource = Sinks.unsafe().many().multicast().directBestEffort();
 
 Flux&lt;String&gt; hotFlux = hotSource.asFlux().map(String::toUpperCase);
 
@@ -12588,65 +12591,65 @@ In this section, if an operator is specific to <a href="https://projectreactor.i
 <div class="ulist">
 <ul>
 <li>
-<p>I want to create an erroring sequence: <code>error</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#error-java.lang.Throwable-">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#error-java.lang.Throwable-">Mono</a>)&#8230;&#8203;</p>
+<p>【创建错误序列】I want to create an erroring sequence: <code>error</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#error-java.lang.Throwable-">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#error-java.lang.Throwable-">Mono</a>)&#8230;&#8203;</p>
 <div class="ulist">
 <ul>
 <li>
-<p>&#8230;&#8203;to replace the completion of a successful <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html">Flux</a>: <code>.concat(Flux.error(e))</code></p>
+<p>&#8230;&#8203;【替换一个成功Flux的完成信号】to replace the completion of a successful <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html">Flux</a>: <code>.concat(Flux.error(e))</code></p>
 </li>
 <li>
-<p>&#8230;&#8203;to replace the <strong>emission</strong> of a successful <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html">Mono</a>: <code>.then(Mono.error(e))</code></p>
+<p>&#8230;&#8203;【替换一个成功Mono的数据发送行为】to replace the <strong>emission</strong> of a successful <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html">Mono</a>: <code>.then(Mono.error(e))</code></p>
 </li>
 <li>
-<p>&#8230;&#8203;if too much time elapses between onNexts: <code>timeout</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#timeout-java.time.Duration-">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#timeout-java.time.Duration-">Mono</a>)</p>
+<p>&#8230;&#8203;【如果两次onNext间隔太久】if too much time elapses [时间流逝] between onNexts: <code>timeout</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#timeout-java.time.Duration-">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#timeout-java.time.Duration-">Mono</a>)</p>
 </li>
 <li>
-<p>&#8230;&#8203;lazily: <code>error(Supplier&lt;Throwable&gt;)</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#error-java.util.function.Supplier-">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#error-java.util.function.Supplier-">Mono</a>)</p>
+<p>&#8230;&#8203;【延迟处理】lazily: <code>error(Supplier&lt;Throwable&gt;)</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#error-java.util.function.Supplier-">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#error-java.util.function.Supplier-">Mono</a>)</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p>I want the try/catch equivalent of:</p>
+<p>【try/catch的等价行为】I want the try/catch equivalent of:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>throwing: <code>error</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#error-java.lang.Throwable-">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#error-java.lang.Throwable-">Mono</a>)</p>
+<p>【抛出异常】throwing: <code>error</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#error-java.lang.Throwable-">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#error-java.lang.Throwable-">Mono</a>)</p>
 </li>
 <li>
-<p>catching an exception:</p>
+<p>【捕获了一个异常】catching an exception:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>and falling back to a default value: <code>onErrorReturn</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#onErrorReturn-java.lang.Class-T-">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#onErrorReturn-java.lang.Class-T-">Mono</a>)</p>
+<p>【回退到默认值】and falling back to a default value: <code>onErrorReturn</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#onErrorReturn-java.lang.Class-T-">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#onErrorReturn-java.lang.Class-T-">Mono</a>)</p>
 </li>
 <li>
-<p>and swallowing the error (ie. complete): <code>onErrorComplete</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#onErrorComplete-java.lang.Class-T-">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#onErrorComplete-java.lang.Class-T-">Mono</a>)</p>
+<p>【忽略异常】and swallowing the error (ie. complete): <code>onErrorComplete</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#onErrorComplete-java.lang.Class-T-">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#onErrorComplete-java.lang.Class-T-">Mono</a>)</p>
 </li>
 <li>
-<p>and falling back to another <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html">Flux</a> or <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html">Mono</a>: <code>onErrorResume</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#onErrorResume-java.lang.Class-java.util.function.Function-">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#onErrorResume-java.lang.Class-java.util.function.Function-">Mono</a>)</p>
+<p>【回退到另一个Flux或Mono】and falling back to another <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html">Flux</a> or <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html">Mono</a>: <code>onErrorResume</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#onErrorResume-java.lang.Class-java.util.function.Function-">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#onErrorResume-java.lang.Class-java.util.function.Function-">Mono</a>)</p>
 </li>
 <li>
-<p>and wrapping and re-throwing: <code>.onErrorMap(t &#8594; new RuntimeException(t))</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#onErrorMap-java.util.function.Function-">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#onErrorMap-java.util.function.Function-">Mono</a>)</p>
+<p>【包装并重新抛出】and wrapping and re-throwing: <code>.onErrorMap(t &#8594; new RuntimeException(t))</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#onErrorMap-java.util.function.Function-">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#onErrorMap-java.util.function.Function-">Mono</a>)</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p>the finally block: <code>doFinally</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#doFinally-java.util.function.Consumer-">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#doFinally-java.util.function.Consumer-">Mono</a>)</p>
+<p>【finally块】the finally block: <code>doFinally</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#doFinally-java.util.function.Consumer-">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#doFinally-java.util.function.Consumer-">Mono</a>)</p>
 </li>
 <li>
-<p>the using pattern from Java 7: <code>using</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#using-java.util.concurrent.Callable-java.util.function.Function-java.util.function.Consumer-">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#using-java.util.concurrent.Callable-java.util.function.Function-java.util.function.Consumer-">Mono</a>) factory method</p>
+<p>【using模式】the using pattern from Java 7: <code>using</code> (<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#using-java.util.concurrent.Callable-java.util.function.Function-java.util.function.Consumer-">Flux</a>|<a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html#using-java.util.concurrent.Callable-java.util.function.Function-java.util.function.Consumer-">Mono</a>) factory method</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p>I want to recover from errors&#8230;&#8203;</p>
+<p>【从错误中恢复】I want to recover from errors&#8230;&#8203;</p>
 <div class="ulist">
 <ul>
 <li>
-<p>by falling back:</p>
+<p>【通过回退】by falling back:</p>
 <div class="ulist">
 <ul>
 <li>
@@ -12662,7 +12665,7 @@ In this section, if an operator is specific to <a href="https://projectreactor.i
 </div>
 </li>
 <li>
-<p>by retrying&#8230;&#8203;</p>
+<p>【通过重试】by retrying&#8230;&#8203;</p>
 <div class="ulist">
 <ul>
 <li>
@@ -12681,14 +12684,14 @@ In this section, if an operator is specific to <a href="https://projectreactor.i
 </div>
 </li>
 <li>
-<p>I want to deal with backpressure "errors" (request max from upstream and apply the strategy when downstream does not produce enough request)&#8230;&#8203;</p>
+<p>【处理背压“错误”】I want to deal with backpressure "errors" (request max from upstream and apply the strategy when downstream does not produce enough request)&#8230;&#8203;</p>
 <div class="ulist">
 <ul>
 <li>
-<p>by throwing a special <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalStateException.html?is-external=true">IllegalStateException</a>: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#onBackpressureError--">Flux#onBackpressureError</a></p>
+<p>【通过抛出IllegalStateException】by throwing a special <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/IllegalStateException.html?is-external=true">IllegalStateException</a>: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#onBackpressureError--">Flux#onBackpressureError</a></p>
 </li>
 <li>
-<p>by dropping excess values: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#onBackpressureDrop--">Flux#onBackpressureDrop</a></p>
+<p>【通过丢弃多余的值】by dropping excess values: <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#onBackpressureDrop--">Flux#onBackpressureDrop</a></p>
 <div class="ulist">
 <ul>
 <li>
@@ -12698,7 +12701,7 @@ In this section, if an operator is specific to <a href="https://projectreactor.i
 </div>
 </li>
 <li>
-<p>by buffering excess values (bounded or unbounded): <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#onBackpressureBuffer--">Flux#onBackpressureBuffer</a></p>
+<p>【通过缓存多余的值】by buffering excess values (bounded or unbounded): <a href="https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#onBackpressureBuffer--">Flux#onBackpressureBuffer</a></p>
 <div class="ulist">
 <ul>
 <li>
@@ -13148,7 +13151,7 @@ to "<a href="#howtoReadMarbles">How to read marble diagrams?</a>"</p>
 <div class="sect2">
 <h3 id="faq.wrap-blocking"><a class="anchor" href="#faq.wrap-blocking"></a>C.1. How Do I Wrap a Synchronous, Blocking Call?</h3>
 <div class="paragraph">
-<p>It is often the case that a source of information is synchronous and blocking.
+<p>【解决信息源阻塞的问题】It is often the case that a source of information is synchronous and blocking.
 To deal with such sources in your Reactor applications, apply the following
 pattern:</p>
 </div>
@@ -13186,14 +13189,14 @@ from <code>Schedulers.boundedElastic()</code>.</td>
 <code>Schedulers.boundedElastic</code>, because it creates a dedicated thread to wait for the
 blocking resource without impacting other non-blocking processing, while also ensuring
 that there is a limit to the amount of threads that can be created, and blocking tasks
-that can be enqueued and deferred during a spike.</p>
+that can be enqueued and deferred during a spike [阻塞任务可以在峰值期间排队和延迟].</p>
 </div>
 <div class="paragraph">
-<p>Note that <code>subscribeOn</code> does not subscribe to the <code>Mono</code>. It specifies what
+<p>【subscribeOn指定在发生subscribe()调用时使用哪种Scheduler】Note that <code>subscribeOn</code> does not subscribe to the <code>Mono</code>. It specifies what
 kind of <code>Scheduler</code> to use when a subscribe call happens.</p>
 </div>
 <div class="paragraph">
-<p>Also, note that <code>subscribeOn</code> operator should immediately follow the source and any
+<p>【subscribeOn算子应该紧跟在源之后，任何其他算子都是应该在subscribeOn包装器之后定义】Also, note that <code>subscribeOn</code> operator should immediately follow the source and any
 further operators are defined after the <code>subscribeOn</code> wrapper.</p>
 </div>
 </div>
